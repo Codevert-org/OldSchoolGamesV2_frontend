@@ -32,4 +32,12 @@ agent any
                 '''
             }
         }
+
+        stage('lint') {
+            steps {
+                sh '''
+                    npm run ci_lint
+                '''
+            }
+        }
     }
