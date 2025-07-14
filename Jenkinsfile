@@ -23,4 +23,13 @@ agent any
                 }
             }
         }
+
+        stage('install') {
+            steps {
+                echo 'performing install...'
+                sh '''
+                    npm install
+                '''
+            }
+        }
     }
