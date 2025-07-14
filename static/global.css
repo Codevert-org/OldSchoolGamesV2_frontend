@@ -1,42 +1,47 @@
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #131410;
-    color: #4a8b53;
-    
-    font-size: 0.8em;
+	margin: 0;
+	padding: 0;
+	background-color: #131410;
+	color: #4a8b53;
+
+	font-size: 0.8em;
 }
 
-body, input, button {
-    font-family: 'ARCADE_N', sans-serif;
+body,
+input,
+button {
+	font-family: 'ARCADE_N', sans-serif;
 }
 
-a, a:hover {
-    color: #4a8b53;
-    text-decoration: none;
+a,
+a:hover {
+	color: #4a8b53;
+	text-decoration: none;
 }
 
 @font-face {
-    font-family: 'ARCADE_N';
-    font-style: normal;
-    font-weight: 500;
-    src: local(''), url('/fonts/ARCADE_N.ttf') format('truetype'),
+	font-family: 'ARCADE_N';
+	font-style: normal;
+	font-weight: 500;
+	src:
+		local(''),
+		url('/fonts/ARCADE_N.ttf') format('truetype');
 }
 
 input {
-    background-color: #000000;
-    color: #88ff88;
-    border-top: 1px solid #222222;
-    border-left: 1px solid #222222;
-    border-right: 1px solid #224422;
-    border-bottom: 1px solid #224422;
-    margin: 10px;
+	background-color: #000000;
+	color: #88ff88;
+	border-top: 1px solid #222222;
+	border-left: 1px solid #222222;
+	border-right: 1px solid #224422;
+	border-bottom: 1px solid #224422;
+	margin: 10px;
 }
 
 input:focus-visible {
-    outline: 1px solid #88ff88;
+	outline: 1px solid #88ff88;
 }
 input:-webkit-autofill {
-    -webkit-box-shadow:0 0 0 50px #000000 inset; /* Change the color to your own background color */
-    -webkit-text-fill-color: #88ff88;
+	-webkit-box-shadow: 0 0 0 50px #000000 inset; /* Change the color to your own background color */
+	-webkit-text-fill-color: #88ff88;
 }

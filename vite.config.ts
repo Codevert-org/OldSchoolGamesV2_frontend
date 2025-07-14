@@ -9,10 +9,7 @@ export default defineConfig({
 		workspace: [
 			{
 				extends: './vite.config.ts',
-				plugins: [
-					svelteTesting(),
-					devtoolsJson()
-				],
+				plugins: [svelteTesting(), devtoolsJson()],
 				test: {
 					name: 'client',
 					environment: 'jsdom',

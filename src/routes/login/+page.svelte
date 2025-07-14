@@ -1,5 +1,5 @@
-<script >
-    import LoginForm from "../../components/loginForm.svelte";
+<script>
+	import LoginForm from '../../components/loginForm.svelte';
 </script>
 
 <LoginForm />

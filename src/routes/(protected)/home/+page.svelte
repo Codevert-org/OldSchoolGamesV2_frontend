@@ -1,5 +1,5 @@
 <script lang="ts">
-  // retrieve User information
+	// retrieve User information
 </script>
 
 <h1>Home</h1>

@@ -1,6 +1,6 @@
 export class Login {
-  accessToken?: string;
-  error?: string;
-  message?: string;
-  statusCode?: number;
+	accessToken?: string;
+	error?: string;
+	message?: string;
+	statusCode?: number;
 }
