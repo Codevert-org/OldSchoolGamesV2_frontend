@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import * as loginData from '$lib/server/login.svelte.js';
-
 export function load({ cookies }) {
-	
 	return {
 		error: cookies.get('error'),
 		accessToken: cookies.get('accessToken')

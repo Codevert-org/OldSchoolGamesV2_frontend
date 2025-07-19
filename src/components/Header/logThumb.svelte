@@ -4,11 +4,11 @@
 
   const logout = (e: any) => {
 		e.preventDefault();
+		setLogStatus({ isLoggedIn: false, accessToken: '' });
 		if(browser) {
       localStorage.removeItem('accessToken');
-			setLogStatus({ isLoggedIn: false, accessToken: '' });
     }
-		e.target.parentElement.submit();
+		e.target.parentElement.parentElement.submit();
 	};
 </script>
 
