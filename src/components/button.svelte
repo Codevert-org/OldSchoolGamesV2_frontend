@@ -19,7 +19,6 @@
 		width: fit-content;
 		transition: all 150ms;
 		color: #4a8b53;
-		font-family: 'ARCADE_N';
 	}
 
 	button:not(.disabled) {

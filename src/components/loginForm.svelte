@@ -4,20 +4,26 @@
 	import Box from '../components/box.svelte';
 	import Button from './button.svelte';
 	import Switch from './switch.svelte';
-	let switchActive = $state(0);
-	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	let response = page.data?.response;
-	//console.log(response);
-	if (browser && response?.accessToken) {
-		localStorage.setItem('accessToken', response.accessToken);
-		goto('/home');
+	import { goto } from '$app/navigation';
+	import { setLogStatus } from '$lib/client/state.svelte.js';
+
+	let switchActive = $state(0);
+	let { data } = $props();
+	console.log(data);
+	if(data.accessToken) {
+		console.log('Access token found in data:', data.accessToken);
+		if(browser) {
+			localStorage.setItem('accessToken', data.accessToken);
+			setLogStatus({ isLoggedIn: true, accessToken: data.accessToken });
+			goto('/home'); // Redirect to home page after successful login
+		}
 	}
+	
 </script>
 
 <div class="login-page">
-	<Switch labels="['Login', 'Register']" bind:active={switchActive} />
+	<Switch labels={["Connexion", "Inscription"]} bind:active={switchActive} />
 	<Box>
 		<form method="POST" action="?/{switchActive == 0 ? 'login' : 'register'}">
 			{#if switchActive == 1}
@@ -30,7 +36,7 @@
 						baseScale: 0.5
 					}}
 				>
-					<div><label for="username">Username:</label></div>
+					<div><label for="username">Pseudo:</label></div>
 					<input type="text" id="username" name="pseudo" required />
 				</div>
 			{/if}
@@ -39,7 +45,7 @@
 				<input type="text" id="email" name="email" required />
 			</div>
 			<div class="form-line">
-				<div><label for="password">Password:</label></div>
+				<div><label for="password">Mot de passe:</label></div>
 				<input type="password" id="password" name="password" required />
 			</div>
 			{#if switchActive == 1}
@@ -52,15 +58,15 @@
 						baseScale: 0.5
 					}}
 				>
-					<div><label for="passwordConfirm">Confirm:</label></div>
+					<div><label for="passwordConfirm">Confirmer:</label></div>
 					<input type="password" id="passwordConfirm" name="passwordConfirm" required />
 				</div>
 			{/if}
 			<Button type="submit">valider</Button>
 		</form>
 	</Box>
-	{#if response?.error}
-		<div>Error :{response?.error}</div>
+	{#if data?.error}
+		<div>Error :{data?.error}</div>
 	{/if}
 </div>
 

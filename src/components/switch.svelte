@@ -1,6 +1,6 @@
 <script lang="ts">
 	let { active = $bindable(0), labels } = $props();
-	let [label1, label2] = JSON.parse(labels);
+	let [label1, label2] = labels;
 
 	function toggleActive() {
 		active = active === 0 ? 1 : 0;
