@@ -3,6 +3,6 @@
 	let { data } = $props();
 </script>
 
-<LoginForm data={data}/>
+<LoginForm {data} />
 
 <style></style>

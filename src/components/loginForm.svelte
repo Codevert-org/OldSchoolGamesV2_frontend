@@ -11,19 +11,17 @@
 	let switchActive = $state(0);
 	let { data } = $props();
 	console.log(data);
-	if(data.accessToken) {
-		console.log('Access token found in data:', data.accessToken);
-		if(browser) {
+	if (data.accessToken) {
+		if (browser) {
 			localStorage.setItem('accessToken', data.accessToken);
 			setLogStatus({ isLoggedIn: true, accessToken: data.accessToken });
 			goto('/home'); // Redirect to home page after successful login
 		}
 	}
-	
 </script>
 
 <div class="login-page">
-	<Switch labels={["Connexion", "Inscription"]} bind:active={switchActive} />
+	<Switch labels={['Connexion', 'Inscription']} bind:active={switchActive} />
 	<Box>
 		<form method="POST" action="?/{switchActive == 0 ? 'login' : 'register'}">
 			{#if switchActive == 1}
