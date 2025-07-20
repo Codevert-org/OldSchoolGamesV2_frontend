@@ -14,7 +14,7 @@ COPY . .
 
 EXPOSE 3000
 ENV NODE_ENV=production
-ENV ORIGIN http://codevert.org:5173
+ENV ORIGIN http://oldschoolgames.codevert.org
 RUN npm run build
 
 CMD [ "node", "build"]
