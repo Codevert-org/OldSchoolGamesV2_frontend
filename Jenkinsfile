@@ -35,7 +35,7 @@ pipeline {
       steps {
         echo 'performing install...'
         sh '''
-          npm ci --omit dev
+          npm install
         '''
       }
     }
