@@ -14,6 +14,7 @@ COPY . .
 
 EXPOSE 3000
 ENV NODE_ENV=production
+ENV ORIGIN https://localhost:3000
 RUN npm run build
 
 CMD [ "node", "build"]
