@@ -12,4 +12,8 @@ RUN npm ci --omit dev
 # Bundle app source
 COPY . .
 
-CMD [ "npm", "run", "build" ]
+EXPOSE 3000
+ENV NODE_ENV=production
+RUN npm run build
+
+CMD [ "node", "buld"]
