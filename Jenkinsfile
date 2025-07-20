@@ -65,35 +65,36 @@ pipeline {
       }
     }
 
-    post {
-      changed {
-        script {
-          def messageResult = "is unknown"
-          def footer = "What happened ?"
-          def smiley = "🤔"
-          if (currentBuild.currentResult == 'SUCCESS') {
-            messageResult = "succeed"
-            footer = "Good job !"
-            smiley = "😎"
-          }
-          if (currentBuild.currentResult == 'UNSTABLE') {
-            messageResult = "is unstable"
-            footer = "Let's make it cleaner !"
-            smiley = "🫤"
-          }
-          if (currentBuild.currentResult == 'FAILURE') {
-            messageResult = "failed"
-            footer = "Better luck next try ?"
-            smiley = "😭"
-          }
-          sh 'echo ${GIT_COMMIT_MSG}'
-          discordSend description: "Jenkins Pipeline Build for Old School Games Frontend ${BRANCH_NAME} ${messageResult} ! ${smiley}\n\ngit commit message :\n${GIT_COMMIT_MSG}",
-          footer: "${footer}",
-          link: "$BUILD_URL",
-          result: currentBuild.currentResult,
-          title: JOB_NAME,
-          webhookURL: "${DISCORD_WEBHOOK}"
+    
+  }
+  post {
+    changed {
+      script {
+        def messageResult = "is unknown"
+        def footer = "What happened ?"
+        def smiley = "🤔"
+        if (currentBuild.currentResult == 'SUCCESS') {
+          messageResult = "succeed"
+          footer = "Good job !"
+          smiley = "😎"
         }
+        if (currentBuild.currentResult == 'UNSTABLE') {
+          messageResult = "is unstable"
+          footer = "Let's make it cleaner !"
+          smiley = "🫤"
+        }
+        if (currentBuild.currentResult == 'FAILURE') {
+          messageResult = "failed"
+          footer = "Better luck next try ?"
+          smiley = "😭"
+        }
+        sh 'echo ${GIT_COMMIT_MSG}'
+        discordSend description: "Jenkins Pipeline Build for Old School Games Frontend ${BRANCH_NAME} ${messageResult} ! ${smiley}\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+        footer: "${footer}",
+        link: "$BUILD_URL",
+        result: currentBuild.currentResult,
+        title: JOB_NAME,
+        webhookURL: "${DISCORD_WEBHOOK}"
       }
     }
   }
