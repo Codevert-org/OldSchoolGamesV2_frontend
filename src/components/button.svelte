@@ -22,7 +22,7 @@
 	}
 
 	button:not(.disabled) {
-		border-image: url('./button_border.png') 11 stretch;
+		border-image: url('/button_border.png') 11 stretch;
 		cursor: pointer;
 	}
 
@@ -36,7 +36,7 @@
 	button.disabled {
 		border: 11px solid transparent;
 		border-radius: 12px;
-		border-image: url('./button_border_disabled.png') 11 stretch;
+		border-image: url('/button_border_disabled.png') 11 stretch;
 		color: #4e6d52;
 		cursor: default;
 	}

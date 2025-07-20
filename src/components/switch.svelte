@@ -31,7 +31,7 @@
 		/*border: 1px solid #333;
   border-radius: 6px;*/
 		border: 11px solid green;
-		border-image: url('./button_border_disabled.png') 11 stretch;
+		border-image: url('/button_border_disabled.png') 11 stretch;
 		border-radius: 12px;
 	}
 
@@ -41,7 +41,7 @@
 		width: 50%;
 		height: 100%;
 		border: 11px solid green;
-		border-image: url('./button_border.png') 11 stretch;
+		border-image: url('/button_border.png') 11 stretch;
 		border-radius: 12px;
 		box-shadow: 3px 3px 6px #306b30;
 		position: absolute;
