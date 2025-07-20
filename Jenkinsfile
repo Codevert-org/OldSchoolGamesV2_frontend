@@ -10,7 +10,7 @@ pipeline {
   environment {
     DOCKER_CREDENTIALS = credentials('codevertDocker')
     DOCKER_TAG = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}"
-    DISCORD_WEBHOOK = credentials('discord-osg-webhook')
+    DISCORD_WEBHOOK = credentials('osg-discord-webhook')
   }
 
   stages {
