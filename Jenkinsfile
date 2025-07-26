@@ -82,7 +82,7 @@ pipeline {
     
   }
   post {
-    always {
+    changed {
       script {
         def messageResult = "is unknown"
         def footer = "What happened ?"
@@ -103,7 +103,7 @@ pipeline {
           smiley = "😭"
         }
         sh 'echo ${GIT_COMMIT_MSG}'
-        discordSend description: "Jenkins Pipeline Build for Old School Games Frontend ${BRANCH_NAME.replace('%23', '#')} ${messageResult} ! ${smiley}\n\ngit commit message :\n${GIT_COMMIT_MSG}",
+        discordSend description: "Jenkins Pipeline Build for Old School Games Frontend ${BRANCH_NAME} ${messageResult} ! ${smiley}\n\ngit commit message :\n${GIT_COMMIT_MSG}",
         footer: "${footer}",
         link: "$BUILD_URL",
         result: currentBuild.currentResult,
