@@ -10,7 +10,6 @@
 
 	let switchActive = $state(0);
 	let { data } = $props();
-	console.log(data);
 	if (data.accessToken) {
 		if (browser) {
 			localStorage.setItem('accessToken', data.accessToken);
