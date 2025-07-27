@@ -107,7 +107,7 @@ pipeline {
         footer: "${footer}",
         link: "$BUILD_URL",
         result: currentBuild.currentResult,
-        title: JOB_NAME,
+        title: JOB_NAME.replace('%23', '#'),
         webhookURL: "${DISCORD_WEBHOOK}"
       }
     }
