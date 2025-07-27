@@ -1,5 +1,5 @@
-import type { Socket } from "socket.io-client";
-import { writable } from "svelte/store";
+import type { Socket } from 'socket.io-client';
+import { writable } from 'svelte/store';
 
 type appStateType = {
 	logStatus: {
@@ -14,7 +14,7 @@ export const appState: appStateType = $state({
 		isLoggedIn: false,
 		accessToken: ''
 	},
-	webSocket: null,
+	webSocket: null
 });
 
 export function setLogStatus(status: { isLoggedIn: boolean; accessToken: string }) {
