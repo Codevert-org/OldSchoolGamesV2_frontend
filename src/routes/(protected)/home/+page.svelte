@@ -34,7 +34,7 @@
 		};
 	});
 
-	setWebSocket();
+	setWebSocket(appState.logStatus.accessToken);
 
 	console.log('websocket state : ', appState.webSocket?.connected);
 

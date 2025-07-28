@@ -37,8 +37,8 @@ export function getLogStatus() {
 	return appState.logStatus;
 }
 
-export function setWebSocket() {
+export function setWebSocket(token: string) {
 	appState.webSocket ??= socketIOClient('https://oldschoolgames-backend.codevert.org/events', {
-		extraHeaders: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+		extraHeaders: { Authorization: `Bearer ${token}` }
 	});
 }

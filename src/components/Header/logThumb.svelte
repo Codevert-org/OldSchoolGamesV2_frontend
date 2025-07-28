@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { setLogStatus } from '$lib/client/state.svelte';
+	import { appState, resetLogStatus } from '$lib/client/state.svelte';
 
 	const logout = (e: any) => {
 		e.preventDefault();
-		setLogStatus({ isLoggedIn: false, accessToken: '' });
+		resetLogStatus();
 		if (browser) {
 			localStorage.removeItem('accessToken');
 		}
@@ -18,7 +18,7 @@
 			<img src="./turn-off.png" alt="logout" />
 		</button>
 	</form>
-	<span>Logged in</span>
+	<span>{appState.logStatus.user ? appState.logStatus.user.pseudo : 'logged in'}</span>
 </div>
 
 <style>
