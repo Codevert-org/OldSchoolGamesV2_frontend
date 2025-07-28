@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { appState, setWebSocket } from '$lib/client/state.svelte';
+	import { appState, setWebSocket, resetLogStatus } from '$lib/client/state.svelte';
+	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
 
 	let client;
 	let { children } = $props();
 
 	//TODO Contrôller le token d'authentification !!!
-
-	//TODO Sortir la gestion du WebSocket du onMount
-	// Y mettre toute la logique ?
+	if (browser && (appState.logStatus.isLoggedIn === false || !appState.logStatus.accessToken)) {
+		resetLogStatus();
+		localStorage.removeItem('accessToken');
+		goto('/login');
+	}
 
 	onMount(() => {
-		setWebSocket();
+		setWebSocket(appState.logStatus.accessToken);
 
 		if (appState.webSocket) {
 			console.log('websocket state : ', appState.webSocket.connected);
