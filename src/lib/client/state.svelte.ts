@@ -8,11 +8,10 @@ type appStateType = {
 		user: {
 			id: number;
 			pseudo: string;
-			avatarUrl: string
-		} | null
+			avatarUrl: string;
+		} | null;
 	};
 	webSocket: Socket | null;
-	
 };
 
 export const appState: appStateType = $state({
@@ -21,8 +20,7 @@ export const appState: appStateType = $state({
 		accessToken: '',
 		user: null
 	},
-	webSocket: null,
-	
+	webSocket: null
 });
 
 export function setLogStatus(status: { isLoggedIn: boolean; accessToken: string }) {
@@ -33,7 +31,6 @@ export function setLogStatus(status: { isLoggedIn: boolean; accessToken: string 
 export function resetLogStatus() {
 	appState.logStatus = { isLoggedIn: false, accessToken: '', user: null };
 	appState.webSocket = null;
-
 }
 
 export function getLogStatus() {
@@ -42,6 +39,6 @@ export function getLogStatus() {
 
 export function setWebSocket() {
 	appState.webSocket ??= socketIOClient('https://oldschoolgames-backend.codevert.org/events', {
-			extraHeaders: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
-		});
+		extraHeaders: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+	});
 }

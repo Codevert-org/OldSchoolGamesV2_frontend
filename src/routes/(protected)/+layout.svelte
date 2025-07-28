@@ -3,23 +3,21 @@
 	import { appState, setWebSocket } from '$lib/client/state.svelte';
 
 	let client;
-  let { children } = $props();
+	let { children } = $props();
 
-  //TODO Contrôller le token d'authentification !!!
+	//TODO Contrôller le token d'authentification !!!
 
-  //TODO Sortir la gestion du WebSocket du onMount
-  // Y mettre toute la logique ?
+	//TODO Sortir la gestion du WebSocket du onMount
+	// Y mettre toute la logique ?
 
 	onMount(() => {
-		
-    setWebSocket();
+		setWebSocket();
 
 		if (appState.webSocket) {
-
-      console.log('websocket state : ', appState.webSocket.connected);
-      if (!appState.webSocket.connected) {
-        appState.webSocket.connect();
-      }
+			console.log('websocket state : ', appState.webSocket.connected);
+			if (!appState.webSocket.connected) {
+				appState.webSocket.connect();
+			}
 
 			client = appState.webSocket;
 			client.on('connect', () => {
@@ -35,7 +33,7 @@
 
 		return () => {
 			console.log('returned from onMount');
-      if (appState.webSocket) {
+			if (appState.webSocket) {
 				appState.webSocket.disconnect();
 			}
 		};
