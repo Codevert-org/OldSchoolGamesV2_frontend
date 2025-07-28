@@ -1,10 +1,15 @@
 import type { Socket } from 'socket.io-client';
-import { writable } from 'svelte/store';
+import socketIOClient from 'socket.io-client';
 
 type appStateType = {
 	logStatus: {
 		isLoggedIn: boolean;
 		accessToken: string;
+		user: {
+			id: number;
+			pseudo: string;
+			avatarUrl: string;
+		} | null;
 	};
 	webSocket: Socket | null;
 };
@@ -12,21 +17,28 @@ type appStateType = {
 export const appState: appStateType = $state({
 	logStatus: {
 		isLoggedIn: false,
-		accessToken: ''
+		accessToken: '',
+		user: null
 	},
 	webSocket: null
 });
 
 export function setLogStatus(status: { isLoggedIn: boolean; accessToken: string }) {
-	appState.logStatus = status;
+	appState.logStatus.isLoggedIn = status.isLoggedIn;
+	appState.logStatus.accessToken = status.accessToken;
 }
 
 export function resetLogStatus() {
-	appState.logStatus = { isLoggedIn: false, accessToken: '' };
+	appState.logStatus = { isLoggedIn: false, accessToken: '', user: null };
+	appState.webSocket = null;
 }
 
 export function getLogStatus() {
 	return appState.logStatus;
 }
 
-export const webSocket = writable();
+export function setWebSocket() {
+	appState.webSocket ??= socketIOClient('https://oldschoolgames-backend.codevert.org/events', {
+		extraHeaders: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+	});
+}

@@ -8,6 +8,8 @@
 		if (!token) {
 			goto('/login');
 		} else {
+			// get user info
+
 			goto('/home');
 		}
 	}
