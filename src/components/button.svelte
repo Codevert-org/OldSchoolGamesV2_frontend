@@ -1,6 +1,20 @@
+<script lang="ts">
+	let {
+		callback = () => {},
+		type = 'button',
+		label,
+		disabled = false
+	}: {
+		callback?: () => void;
+		type?: 'button' | 'submit' | 'reset';
+		label: string;
+		disabled?: boolean;
+	} = $props();
+</script>
+
 <div class="button_wrapper">
-	<button>
-		<slot />
+	<button {type} onclick={callback} {disabled}>
+		<span>{label}</span>
 	</button>
 </div>
 
@@ -19,21 +33,18 @@
 		width: fit-content;
 		transition: all 150ms;
 		color: #4a8b53;
-	}
-
-	button:not(.disabled) {
 		border-image: url('/button_border.png') 11 stretch;
 		cursor: pointer;
 	}
 
-	button:hover:not(.disabled) {
+	button:hover:not([disabled]) {
 		box-shadow: 3px 3px 6px #3e8b3e;
 		color: #4ac44a;
 		background-color: transparent;
 	}
 
 	/* button disabled */
-	button.disabled {
+	button[disabled] {
 		border: 11px solid transparent;
 		border-radius: 12px;
 		border-image: url('/button_border_disabled.png') 11 stretch;
@@ -41,7 +52,7 @@
 		cursor: default;
 	}
 
-	button.disabled > span {
+	button[disabled] > span {
 		cursor: default;
 	}
 </style>
