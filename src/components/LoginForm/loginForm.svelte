@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { cubicInOut } from 'svelte/easing';
 	import fadeScale from './fade-scale.js';
 	import Box from '../box.svelte';
@@ -30,31 +30,33 @@
 		'image/webp': 'webp'
 	};
 
-	/**
-	 * @type {FileList | null}
-	 */
-	let avatarFile = $state(null);
+	let avatarFile: FileList | null = $state(null);
 
-	let handleSubmit = (
-		/** @type {{ preventDefault: () => void; target: { parentElement: { parentElement: { parentElement: { submit: () => void; }; }; }; }; }} */ event
-	) => {
+	let handleSubmit = (event: MouseEvent) => {
 		event.preventDefault();
 
 		if (blob) {
 			let file = new File([blob], `avatar.${extenstion[mimeType || 'image/png']}`, {
 				type: mimeType || 'image/png'
 			});
-			console.log('Cropped image file:', file);
 			const fileList = new DataTransfer();
 			fileList.items.clear();
 			fileList.items.add(file);
 
 			avatarFile = fileList.files;
 
-			// @ts-expect-error Element exists
-			document.querySelector('input[name="avatar"]').files = avatarFile;
+			const fileInput = document.querySelector('input[name="avatar"]') as HTMLInputElement | null;
+			if (fileInput) {
+				fileInput.files = avatarFile;
+			} else {
+				console.error('Avatar input not found');
+			}
 		}
-		event.target.parentElement.parentElement.parentElement.submit();
+		const elt = event.target as HTMLFormElement;
+		const form = elt.closest('form');
+		if (form) {
+			form.submit();
+		}
 	};
 </script>
 
@@ -115,7 +117,7 @@
 				</div>
 			{/if}
 			<!-- TODO disabled controlled by form validation -->
-			<Button callback={handleSubmit} label="valider" disabled={false} />
+			<Button callback={(e) => handleSubmit(e)} label="valider" disabled={false} />
 		</form>
 	</Box>
 	{#if data?.error}

@@ -1,9 +1,10 @@
-<script>
+<script lang='ts'>
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-nocheck
 
 	import Cropper from 'svelte-easy-crop';
 	import getCroppedImg from './canvasUtils';
+	import Button from '../button.svelte';
 
 	let {
 		showModal = $bindable(),
@@ -38,14 +39,6 @@
 	let style = $state('');
 
 	function previewCrop(e) {
-		console.log('profilePicture', profilePicture);
-		console.log(
-			'mimeType',
-			profilePicture.src.substring(
-				profilePicture.src.indexOf(':') + 1,
-				profilePicture.src.indexOf(';')
-			)
-		);
 		mimeType = profilePicture.src.substring(
 			profilePicture.src.indexOf(':') + 1,
 			profilePicture.src.indexOf(';')
@@ -62,19 +55,20 @@
 
 	async function cropImage() {
 		croppedImage = await getCroppedImg(image, pixelCrop);
-		console.log('Cropped image:', croppedImage);
-		// get mime type from croppedImage
-		//mimeType = croppedImage.type;
-		console.log('Cropped image mime type:', mimeType);
-
 		// convert croppedImage to a data blob
 		blob = await fetch(croppedImage).then((r) => r.blob());
+		dialog.close();
 	}
 
 	function reset() {
 		croppedImage = null;
 		image = null;
 	}
+
+	const askImageSelection = () => {
+		const inputEl = document.querySelector('#avatarInput') as HTMLInputElement;
+		inputEl.click();
+	};
 </script>
 
 <dialog
@@ -88,11 +82,14 @@
 		{#if !image}
 			<h2>Upload a picture for cropping?</h2>
 			<input
+				id="avatarInput"	
 				type="file"
 				accept=".jpg, .jpeg, .png"
 				onchange={(e) => onFileSelected(e)}
 				bind:this={fileinput}
 			/>
+			<Button type="button" callback={askImageSelection} label="Choisir une image" />
+			<Button type="button" callback={() => dialog.close()} label="Annuler" />
 		{:else}
 			<h2>svelte-easy-crop</h2>
 			<div style="position: relative; width: 100%; height: 300px;">
@@ -118,13 +115,14 @@
 			{#if croppedImage}
 				<h2>Cropped Output</h2>
 				<img src={croppedImage} alt="Cropped profile" class="prof-file" /><br />
-			{:else}
-				<br /><button type="button" onclick={async () => cropImage()}>Crop!</button>
+			
+				
 			{/if}
-			<button type="button" onclick={reset}>Supprimer ?</button>
+			<br />
+			<Button type="button" callback={async () => cropImage()} label="Valider"/>
+			<Button type="button" callback={reset} label="Supprimer"/>
 		{/if}
-		<!-- svelte-ignore a11y_autofocus -->
-		<button autofocus onclick={() => dialog.close()}>close modal</button>
+		
 	</div>
 </dialog>
 
@@ -167,8 +165,9 @@
 			opacity: 1;
 		}
 	}
-	button {
-		display: block;
+
+	#avatarInput {
+		display: none;
 	}
 
 	.prof-pic-wrapper {

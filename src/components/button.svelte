@@ -5,7 +5,7 @@
 		label,
 		disabled = false
 	}: {
-		callback?: () => void;
+		callback?: (e: MouseEvent) => void;
 		type?: 'button' | 'submit' | 'reset';
 		label: string;
 		disabled?: boolean;
