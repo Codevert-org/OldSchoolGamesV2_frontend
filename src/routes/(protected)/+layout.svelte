@@ -18,7 +18,6 @@
 		setWebSocket(appState.logStatus.accessToken);
 
 		if (appState.webSocket) {
-			console.log('websocket state : ', appState.webSocket.connected);
 			if (!appState.webSocket.connected) {
 				appState.webSocket.connect();
 			}
@@ -36,7 +35,6 @@
 		}
 
 		return () => {
-			console.log('returned from onMount');
 			if (appState.webSocket) {
 				appState.webSocket.disconnect();
 			}

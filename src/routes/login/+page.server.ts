@@ -19,8 +19,7 @@ export const actions = {
 			body: JSON.stringify(json)
 		}).then((res) => res.json());
 		if (backendResponse.error != undefined) {
-			//loginData.setResponse({ error: backendResponse.error });
-			cookies.set('error', backendResponse.error, { path: '/' });
+			cookies.set('error', backendResponse.message, { path: '/' });
 			return;
 		}
 		cookies.set('accessToken', backendResponse.accessToken, { path: '/' });
@@ -29,20 +28,16 @@ export const actions = {
 	register: async ({ cookies, request }) => {
 		cookies.set('error', '', { path: '/' });
 		const data = await request.formData();
-		// Convert FormData to a plain object before multer is implemented on backend
-		const json = Object.fromEntries(data);
 		const backendResponse = await fetch(
 			'https://oldschoolgames-backend.codevert.org/auth/register',
 			{
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(json)
+				body: data
 			}
 		).then((res) => res.json());
 		if (backendResponse.error != undefined) {
-			cookies.set('error', backendResponse.error, { path: '/' });
+			console.log('Registration error:', backendResponse);
+			cookies.set('error', backendResponse.message, { path: '/' });
 			return;
 		}
 		cookies.set('accessToken', backendResponse.accessToken, { path: '/' });

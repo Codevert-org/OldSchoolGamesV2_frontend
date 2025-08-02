@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
 	import { cubicInOut } from 'svelte/easing';
 	import fadeScale from './fade-scale.js';
-	import Box from '../components/box.svelte';
-	import Button from './button.svelte';
-	import Switch from './switch.svelte';
+	import Box from '../box.svelte';
+	import Button from '../button.svelte';
+	import Switch from '../switch.svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { setLogStatus } from '$lib/client/state.svelte.js';
+	import CropperModal from '../CopperModal/CropperModal.svelte';
 
-	let switchActive = $state(0);
 	let { data } = $props();
 	if (data.accessToken) {
 		if (browser) {
@@ -17,12 +17,57 @@
 			goto('/home'); // Redirect to home page after successful login
 		}
 	}
+	let switchActive = $state(0);
+	let showModal = $state(false);
+	// cropper
+
+	let croppedImage = $state(null);
+	let blob = $state(null);
+	let mimeType = $state(null);
+	let extenstion = {
+		'image/png': 'png',
+		'image/jpeg': 'jpg',
+		'image/webp': 'webp'
+	};
+
+	let avatarFile: FileList | null = $state(null);
+
+	let handleSubmit = (event: MouseEvent) => {
+		event.preventDefault();
+
+		if (blob) {
+			let file = new File([blob], `avatar.${extenstion[mimeType || 'image/png']}`, {
+				type: mimeType || 'image/png'
+			});
+			const fileList = new DataTransfer();
+			fileList.items.clear();
+			fileList.items.add(file);
+
+			avatarFile = fileList.files;
+
+			const fileInput = document.querySelector('input[name="avatar"]') as HTMLInputElement | null;
+			if (fileInput) {
+				fileInput.files = avatarFile;
+			} else {
+				console.error('Avatar input not found');
+			}
+		}
+		const elt = event.target as HTMLFormElement;
+		const form = elt.closest('form');
+		if (form) {
+			form.submit();
+		}
+	};
 </script>
 
 <div class="login-page">
 	<Switch labels={['Connexion', 'Inscription']} bind:active={switchActive} />
 	<Box>
-		<form method="POST" action="?/{switchActive == 0 ? 'login' : 'register'}">
+		<form
+			method="POST"
+			enctype="multipart/form-data"
+			action="?/{switchActive == 0 ? 'login' : 'register'}"
+		>
 			{#if switchActive == 1}
 				<div
 					class="form-line"
@@ -58,14 +103,29 @@
 					<div><label for="passwordConfirm">Confirmer:</label></div>
 					<input type="password" id="passwordConfirm" name="passwordConfirm" required />
 				</div>
+				<div>
+					<Button callback={() => (showModal = true)} label="avatar" />
+				</div>
+				<div>
+					{#if croppedImage}
+						<img src={croppedImage} alt="Cropped profile" class="avatar-preview" />
+						<!-- Hidden input to submit cropped image as data URL -->
+						<input type="file" name="avatar" style="display:none" />
+					{:else}
+						<p>Aucune image</p>
+					{/if}
+				</div>
 			{/if}
-			<Button type="submit">valider</Button>
+			<!-- TODO disabled controlled by form validation -->
+			<Button callback={(e) => handleSubmit(e)} label="valider" disabled={false} />
 		</form>
 	</Box>
 	{#if data?.error}
 		<div>Error :{data?.error}</div>
 	{/if}
 </div>
+
+<CropperModal bind:showModal bind:croppedImage bind:mimeType bind:blob />
 
 <style>
 	.login-page {
@@ -87,5 +147,12 @@
 	}
 	.form-line input {
 		width: 200px;
+	}
+	.avatar-preview {
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		margin: auto;
+		display: block;
 	}
 </style>

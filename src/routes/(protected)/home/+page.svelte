@@ -16,17 +16,14 @@
 	};
 
 	onMount(() => {
-		console.log('Data received:', data);
 		if (data.user) {
 			appState.logStatus.user = data.user;
-			console.log('User data set in appState:', appState.logStatus.user);
 		} else {
 			console.warn('No user data received');
 		}
 
-		console.log('WebSocket ? :', appState.webSocket !== undefined && appState.webSocket !== null);
 		return () => {
-			console.log('Cleaning up WebSocket listeners');
+			// Cleaning up WebSocket listeners
 			appState.webSocket?.off('welcome');
 			appState.webSocket?.off('users');
 			appState.webSocket?.off('movies');
@@ -35,9 +32,6 @@
 	});
 
 	setWebSocket(appState.logStatus.accessToken);
-
-	console.log('websocket state : ', appState.webSocket?.connected);
-
 	client = appState.webSocket;
 
 	client?.on('welcome', function () {
@@ -45,15 +39,12 @@
 	});
 
 	client?.on('users', function (data: any) {
-		console.log('users event received:', data);
 		displayMessage(`Users event : ${JSON.stringify(data)}`);
 	});
 	client?.on('movies', function (data: any) {
-		console.log('movies event received:', data);
 		displayMessage(`movies event : ${JSON.stringify(data)}`);
 	});
 	client?.on('team', function (data: any) {
-		console.log('team event received:', data);
 		displayMessage(`team event : ${JSON.stringify(data)}`);
 	});
 </script>
