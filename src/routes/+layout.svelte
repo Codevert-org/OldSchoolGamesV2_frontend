@@ -8,7 +8,7 @@
 <header>
 	<h1><a href="/">Old School Games !</a></h1>
 	{#if appState.logStatus.isLoggedIn}
-		<LogThumb />
+		<a href="/profile"><LogThumb /></a>
 	{/if}
 </header>
 {@render children()}

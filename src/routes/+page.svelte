@@ -7,7 +7,8 @@
 		// Extract the token value, from state, or from localStorage
 		if (!token) {
 			goto('/login');
-		} else {
+		} 
+		else {
 			// get user info
 
 			goto('/home');
