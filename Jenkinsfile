@@ -53,6 +53,10 @@ pipeline {
         expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
       }
       steps {
+        // copy .env file from jenkins credentials to current workspace
+        withCredentials([file(credentialsId: "oldschoolgames_frontend_env", variable: 'envFile')]){
+          sh 'cp $envFile $WORKSPACE'
+        }
         sh '''
           npm run build
         '''

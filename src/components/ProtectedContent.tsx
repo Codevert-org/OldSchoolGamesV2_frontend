@@ -17,7 +17,7 @@ export const ProtectedContent = ({ children }: ProtectedContentProps) => {
     return <Navigate to="/login" ></Navigate>
   }
 
-  const socket = socketIOClient('https://oldschoolgames-backend.codevert.org/events', {
+  const socket = socketIOClient(`${import.meta.env.VITE_BACKEND_URL}/events`, {
 		extraHeaders: { Authorization: `Bearer ${appContext.appState.accessToken}` }
 	});
 

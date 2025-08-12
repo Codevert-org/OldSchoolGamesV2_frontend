@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { AppContext } from '../../contexts/appContext';
 import { CropperModal } from '../CropperModal/CropperModal';
 import './loginForm.css'
+import { fetchAuth } from '../../services/auth.service';
 
 export function LoginForm() {
   const appContext = useContext(AppContext);
@@ -48,21 +49,23 @@ export function LoginForm() {
 			formData.set('avatar', file);
     }
 
-    //TODO error handling
+    //TODO form error handling
 
-    // fetch
-    const response: {accessToken: string, user: {id: number, pseudo: string, avatarUrl: string | null}} = await fetch(`http://localhost:3000/auth/${firstIsActive ? 'login' : 'register'}`, {
-			method: 'POST',
-			headers: firstIsActive ? {
-				'Content-Type': 'application/json'
-			} : undefined,
-			body: firstIsActive ? json : formData
-		}).then((res) => res.json());
+    const endpoint = firstIsActive ? 'login' : 'register';
+    const body = firstIsActive ? json : formData;
+    let response: {accessToken: string, user: {id: number, pseudo: string, avatarUrl: string | null}};
 
-    localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('userInfos', JSON.stringify(response.user));
-    appContext.setAppState({accessToken: response.accessToken, user: response.user});
-    navigate('/');
+    try {
+      response = await fetchAuth(endpoint, body);
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('userInfos', JSON.stringify(response.user));
+      appContext.setAppState({accessToken: response.accessToken, user: response.user});
+      navigate('/');
+    }
+    catch (e) {
+      console.log(e);
+    }
+    
   }
 
   return (
