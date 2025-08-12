@@ -1,0 +1,71 @@
+.switch-wrapper {
+  margin: 10px auto;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  width: 100%;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  border: 11px solid green;
+  border-image: url('/button_border_disabled.png') 11 stretch;
+  border-radius: 12px;
+}
+
+.switch-wrapper::after {
+  content: '';
+  display: block;
+  width: calc(50% - 11px);
+  height: 100%;
+  border: 11px solid green;
+  border-image: url('/button_border.png') 11 stretch;
+  border-radius: 12px;
+  box-shadow: 3px 3px 6px #306b30;
+  position: absolute;
+  top: -11px;
+  left: -11px;
+  transition: left 0.3s ease-in-out;
+}
+
+.switch-wrapper:not(.isFirstActive)::after {
+  left: calc(50%);
+  transition: left 0.3s ease-in-out;
+}
+
+.label {
+  padding: 4px;
+  text-align: center;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to right,
+    rgb(11, 112, 36),
+    rgb(21, 235, 74) 2% 49%,
+    rgb(11, 112, 36) 51%
+  );
+  transition: background-position 0.3s ease-in-out;
+}
+
+.switch-wrapper .label:nth-child(1) {
+  margin-right: 15px;
+}
+
+.switch-wrapper .label:nth-child(2) {
+  margin-left: 15px;
+}
+
+.switch-wrapper.isFirstActive .label:nth-child(1) {
+  background-position: 0%;
+}
+.switch-wrapper:not(.isFirstActive) .label:nth-child(1) {
+  background-position: -100%;
+}
+
+.switch-wrapper.isFirstActive .label:nth-child(2) {
+  background-color: rgb(11, 112, 36);
+  background-position: 100%;
+}
+.switch-wrapper:not(.isFirstActive) .label:nth-child(2) {
+  background-position: 0%;
+}
