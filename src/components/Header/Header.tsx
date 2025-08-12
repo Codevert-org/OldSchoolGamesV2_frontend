@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import './Header.css'
 import { Link } from "react-router-dom";
 import { AppContext } from '../../contexts/appContext';
-import { Button } from '../Button/Button';
 
 export function Header() {
   const appContext = useContext(AppContext);
