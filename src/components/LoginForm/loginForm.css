@@ -4,48 +4,40 @@
   text-align: left;
   position: relative;
 }
+
+.expandable {
+  display: grid;;
+  grid-template-rows: 0fr;
+  opacity: 0;
+	transition: all .2s ease-out;
+  overflow: hidden;
+	& div {
+		min-height: 0;
+    overflow: hidden;
+	}
+}
+.expanded .expandable {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
 .form-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
   column-gap: 30px;
-
-}
-
-/*
-.form-line.animated {
-  /* @keyframes duration | timing-function | delay |
-   iteration-count | direction | fill-mode | play-state | name 
-  animation: 2s ease-in-out forwards slidein;
-  overflow: hidden;
-  
-}
-
-.form-line:not(.animated) {
-
-}
-
-@keyframes slidein {
-  from {
-    width: 0;
-  }
-  to {
+  & div {
     width: 100%;
   }
+  & label {
+    width: 100px;
+    text-align: right;
+  }
+  & input {
+    width: 200px;
+  }
 }
 
-*/
-
-.form-line div {
-  width: 100%;
-}
-.form-line label {
-  width: 100px;
-  text-align: right;
-}
-.form-line input {
-  width: 200px;
-}
 .avatar-preview {
   width: 100px;
   height: 100px;
