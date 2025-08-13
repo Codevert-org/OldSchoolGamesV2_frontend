@@ -25,13 +25,53 @@ header h1 {
 	right: 10px;
 	padding: 5px 10px;
 	border-radius: 5px;
-	font-size: 12px;
-	display: flex;
-	align-items: center;
+	font-size: 14px;
+	& img {
+		width: 20px;
+		margin-left: 10px;
+		cursor: pointer;
+	}
+	& .logLabel {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		& .logAvatar {
+			height: 30px;
+			width: 30px;
+			border-radius: 15px;
+			border: 1px solid;
+			overflow: hidden;
+			margin-left: 0;
+			margin-right: 6px;;
+		}
+	}
+	& .box {
+		margin-top: 4px;
+		background-color: #131410;
+	}
 }
 
-.logthumb img {
-	width: 20px;
-	margin-left: 10px;
-	cursor: pointer;
+.logMenu {
+	margin-top: 6px;
+	padding: 0 6px;
+	opacity: 0;
+	transition: opacity .2s ease-out;
+}
+.expanded .logMenu {
+	opacity: 1;
+}
+
+.menuItem {
+	padding: 6px 0;
+	display:grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows .2s ease-out;
+  overflow: hidden;
+	& span {
+		min-height: 0;
+	}
+}
+
+.logthumb.expanded .menuItem {
+	grid-template-rows: 1fr;
 }
