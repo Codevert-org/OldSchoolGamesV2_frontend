@@ -77,22 +77,21 @@ export function LoginForm() {
         switchIndex={switchIndex}
         firstIsActive={firstIsActive}
       />
-      <Box>
+      <Box className={`loginForm${firstIsActive ? '' : ' expanded'}`}>
         {/* <form ref={formRef} action={handleSubmit}> */}
         <form ref={formRef}  action={handleSubmit}>
-          {!firstIsActive && 
+            {
             /**
              * TODO : Make it a controlled input
              * and, in the handleChange, try to make an API call to check if pseudo is un use
              * ! Debounce it !
-             */
-            <div
-              className="form-line"
-            >
+             */}
+          <div className="expandable">
+            <div className="form-line">
               <div><label htmlFor="username">Pseudo:</label></div>
               <input type="text" id="username" name="pseudo" required />
             </div>
-          }
+          </div>
           <div className="form-line">
             <div><label htmlFor="email">Email:</label></div>
             <input type="text" id="email" name="email" required />
@@ -101,24 +100,20 @@ export function LoginForm() {
             <div><label htmlFor="password">Mot de passe:</label></div>
             <input type="password" id="password" name="password" required />
           </div>
-          {!firstIsActive && 
-            <>
-              <div
-                className={`form-line ${!firstIsActive ? 'animated' : ''}`}
-              >
-                <div><label htmlFor="passwordConfirm">Confirmez:</label></div>
-                <input type="password" id="passwordConfirm" name="passwordConfirm" required />
-              </div>
-              <div>
-                <Button callback={() => (setIsOpen(true))} label="avatar" />
-              </div>
-              {croppedImage && 
-                <>
-                  <img src={croppedImage} alt="Cropped profile" className="avatar-preview" />
-                </>
-              }
-            </>
-          }
+          <div className='expandable'>
+            <div className="form-line">
+              <div><label htmlFor="passwordConfirm">Confirmez:</label></div>
+              <input type="password" id="passwordConfirm" name="passwordConfirm" required />
+            </div>
+          </div>
+          <div className='expandable'>
+            <div>
+              <Button callback={() => (setIsOpen(true))} label="avatar" />
+                {croppedImage && 
+                  <div><img src={croppedImage} alt="Cropped profile" className="avatar-preview" /></div>
+                }
+            </div>
+          </div>
           <Button type='submit' label="Valider"/>
         </form>
       </Box>
