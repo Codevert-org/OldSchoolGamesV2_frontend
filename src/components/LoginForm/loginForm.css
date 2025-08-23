@@ -21,18 +21,15 @@
   opacity: 1;
 }
 
+form {
+  max-width: fit-content;
+}
+
 .form-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
   column-gap: 30px;
-  & div {
-    width: 100%;
-  }
-  & label {
-    width: 100px;
-    text-align: right;
-  }
   & input {
     width: 200px;
   }

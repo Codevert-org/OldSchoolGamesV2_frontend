@@ -50,6 +50,12 @@ header h1 {
 		background-color: #131410;
 	}
 }
+.logthumb:not(.expanded) {
+	& .box, a {
+		cursor: unset;
+		pointer-events: none;
+	}
+}
 
 .logMenu {
 	margin-top: 6px;
