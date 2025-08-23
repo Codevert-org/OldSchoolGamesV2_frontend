@@ -1,8 +1,4 @@
-interface ApiError {
-	status: number;
-	statusText: string;
-	message: string;
-}
+import { checkResponse } from "./checkResponse";
 
 export async function fetchAuth (endpoint: 'login' | 'register', body: string | FormData) {
   //? control type of data
@@ -27,17 +23,6 @@ export async function fetchAuth (endpoint: 'login' | 'register', body: string | 
       body
     }
   )
-  
-  if (!response.ok) {
-		const error: ApiError = {
-			status: response.status,
-			statusText: response.statusText,
-			message: `Erreur : ${response.status} (${response.statusText})`,
-		};
-		throw error;
-	}
-  
-  
-
-  return response.json();
+  const json = await checkResponse(response);
+  return json;
 }

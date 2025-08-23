@@ -6,6 +6,8 @@ import { Login } from './pages/Login/Login.tsx';
 import AppProvider from './providers/AppProvider.tsx';
 import { Home } from './pages/Home.tsx';
 import { ProtectedContent } from './components/ProtectedContent.tsx';
+import { Dashboard } from './pages/Dashboard/Dashboard.tsx';
+import { Profile } from './pages/Profile/Profile.tsx';
 
 createRoot(document.getElementById('root')!).render(
   < AppProvider>
@@ -15,7 +17,10 @@ createRoot(document.getElementById('root')!).render(
           <ProtectedContent>
             <Home /> 
           </ProtectedContent> 
-        } />
+        } >
+          <Route path="/" element={ <Dashboard /> } />
+          <Route path="profile" element={ <Profile />} />
+        </Route>
           
         
         <Route path="/login" element={ <Login /> } />

@@ -1,15 +1,15 @@
-import { useContext } from "react"
-import { AppContext } from "../contexts/appContext"
 import { Header } from "../components/Header/Header";
+import { Outlet } from "react-router-dom";
+import WsProvider from "../providers/WsProvider";
 
 export function Home() {
-  const appContext = useContext(AppContext);
-  console.log('appState : ', appContext.appState);
+  // TODO: setup WebSocket connexion in a context provider
+
+  
   return (
-    <>
-    <Header />
-    <p>Home works !</p>
-    <p>Welcome {appContext.appState.user?.pseudo}</p>
-    </>
+    <WsProvider>
+      <Header />
+      <Outlet />
+    </WsProvider>
   )
 }

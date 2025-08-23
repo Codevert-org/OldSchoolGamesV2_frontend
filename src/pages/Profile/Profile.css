@@ -1,0 +1,29 @@
+h1 {
+  text-align: center;
+}
+
+.profile-page .expandable {
+  grid-template-rows: 0fr 0fr 0fr;;
+}
+
+.profile-page .expanded .expandable {
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.avatar-preview {
+  width: 100%;;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.actualAvatar, .newAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: block;
+}
+
+.avatarChange {
+  display: block;;
+}

@@ -8,7 +8,7 @@ import './CropperModal.css';
 
 type avatar = {
   setImage: Dispatch<SetStateAction<string>>;
-  croppedImage: string
+  croppedImage: string;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }
