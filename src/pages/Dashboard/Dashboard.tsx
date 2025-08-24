@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react"
 import { AppContext } from "../../contexts/appContext"
-import { WsContext } from "../../contexts/wsContext";
+import WsContext from "../../contexts/wsContext";
+import type { IUserEventData } from "../../interfaces/events/IUsers";
 
 export function Dashboard() {
   const appContext = useContext(AppContext);
@@ -17,37 +18,23 @@ export function Dashboard() {
     socket?.on("error", (error) => {
       console.log("error : ", error);
     })
-    socket?.on("movies", (data) => {
-      console.log("Movies : ", data);
-    });
-    socket?.on("users", (data) => {
+
+    // TODO créer les interfaces d'events data
+    socket?.on("users", (data: IUserEventData) => {
       console.log("Users : ", data);
     });
-    socket?.on("team", (data) => {
-      console.log("Team : ", data);
-    });
+
+    socket?.on("userList", (data: IUserEventData[]) => {
+      console.log("User List : ", data);
+    })
+    
     return () => {
       socket?.off("connect");
       socket?.off("disconnect");
       socket?.off("error");
-      socket?.off("movies");
       socket?.off("users");
-      socket?.off("team");
     }
   })
-
-  // socket?.on("connect", () => {
-  //   console.log("WS connected");
-  // });
-  // socket?.on("movies", (data) => {
-  //   console.log("Movies : ", data);
-  // });
-  // socket?.on("users", (data) => {
-  //   console.log("Users : ", data);
-  // });
-  // socket?.on("team", (data) => {
-  //   console.log("Team : ", data);
-  // });
 
   return (
     <>

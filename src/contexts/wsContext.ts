@@ -1,9 +1,6 @@
 import { createContext } from "react"
-import type { Socket } from "socket.io-client"
+import type { IWsProvider } from "../interfaces/events/IWsProvider";
 
-type WsContextType = {
-  Socket: Socket;
-  ioClose: () => void;
-}
+const WsContext = createContext<IWsProvider | null>(null);
 
-export const WsContext = createContext<WsContextType | null>(null)
+export default WsContext;

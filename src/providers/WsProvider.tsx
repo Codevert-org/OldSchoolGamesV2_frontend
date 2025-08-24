@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import socketIOClient from "socket.io-client";
 
-import {WsContext} from "../contexts/wsContext";
+import WsContext from "../contexts/wsContext";
 
 type IoSocketProviderProps = {
     children: ReactNode
