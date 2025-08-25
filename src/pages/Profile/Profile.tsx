@@ -61,7 +61,7 @@ export function Profile() {
         user: {
           ...previousState.user!,
           pseudo: response.pseudo,
-          avatarUrl: response.avatarUrl + "#" + new Date().getTime() // to force refresh the avatar
+          avatarUrl: response.avatarUrl
         }
       }))
       // TODO : clean avatar Cropper
