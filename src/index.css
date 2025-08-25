@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
 
+html, #root, #root > div {
+	height: 100%
+}
+
 body {
 	margin: 0;
 	padding: 0;
 	background-color: #131410;
 	color: #4a8b53;
+	height: 100%;
 }
 
 body,

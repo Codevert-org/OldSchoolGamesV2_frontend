@@ -6,5 +6,5 @@ export interface IUser {
 
 export interface IUserEventData {
   eventType: 'connected' | 'disconnected';
-  user: IUser;
+  user: IUser | number;
 }
