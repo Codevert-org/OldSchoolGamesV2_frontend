@@ -6,3 +6,5 @@ export * from './Header/Header';
 export * from './LoginForm/LoginForm';
 export * from './Switch/Switch';
 export * from './ProtectedContent';
+export * from './UserList/UserList';
+export * from './UserItem/UserItem';

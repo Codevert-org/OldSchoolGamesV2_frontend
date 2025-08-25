@@ -1,0 +1,20 @@
+.dashboard {
+  position: relative;
+  padding: 0;
+  height: calc(100% - 120px);
+  & p {
+    text-align: center;
+  }
+  & h1 {
+    padding: 20px 0;
+    margin: 0;
+  }
+  & .userList {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 25%;
+    box-shadow: 0px 6px 10px #4a8b53;
+    /* height: calc(100% - 120 px); */
+  }
+}

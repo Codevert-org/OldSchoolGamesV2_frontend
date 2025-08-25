@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from '../../contexts/appContext';
 import { Box } from '../Box/Box';
 
-export function Header() {
+export function Header({ ioClose }: { ioClose?: () => void }) {
   useEffect(() => {
     const documentElement = document.querySelector('html');
     
@@ -26,6 +26,9 @@ export function Header() {
   const logOut = () => {
     localStorage.clear();
     appContext.setAppState({accessToken: '', user: null});
+    if(ioClose) {
+      ioClose();
+    }
   }
 
 

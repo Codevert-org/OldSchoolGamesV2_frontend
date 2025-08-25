@@ -8,6 +8,7 @@ import { Home } from './pages/Home.tsx';
 import { ProtectedContent } from './components/ProtectedContent.tsx';
 import { Dashboard } from './pages/Dashboard/Dashboard.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
+import WsProvider from './providers/WsProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   < AppProvider>
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={
           <ProtectedContent>
-            <Home /> 
+            <WsProvider>
+              <Home /> 
+            </WsProvider>
           </ProtectedContent> 
         } >
           <Route path="/" element={ <Dashboard /> } />

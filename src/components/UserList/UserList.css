@@ -1,0 +1,9 @@
+.userList {
+  /*box-shadow: #4a8b53 0px 0px 10px;*/
+  /* border-right: 1px solid #4a8b53; */
+  /* height: auto; */
+  & .userList-title {
+    display: block;
+    margin: 15px 10px;
+  }
+}
