@@ -116,7 +116,7 @@ export function LoginForm() {
             <div>
               <Button callback={() => (setIsOpen(true))} label="avatar" />
               {croppedImage && 
-                <div><img src={croppedImage} alt="Cropped profile" className="avatar-preview" /></div>
+                <div className="avatar-preview-container"><img src={croppedImage} alt="Cropped profile" className="avatar-preview" /></div>
               }
             </div>
           </div>
