@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.4",
+    "@mui/styled-engine": "^7.3.3",
     "@types/react-easy-crop": "^1.16.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -26,6 +29,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "sass-embedded": "^1.93.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4"

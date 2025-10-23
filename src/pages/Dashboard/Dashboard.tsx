@@ -9,7 +9,8 @@ export function Dashboard() {
   const appContext = useContext(AppContext);
   const wsContext = useContext(WsContext);
   const socket = wsContext?.Socket;
-  const [userList, setUserList] = useState<IUser[]>([])
+  const [userList, setUserList] = useState<IUser[]>([]);
+  const eventNames = ["connect", "disconnect", "error", "users", "userList", "invitation"];
 
   useEffect(() => {
     socket?.on("connect", () => {
@@ -22,11 +23,21 @@ export function Dashboard() {
       console.log("error : ", error);
     })
 
+    //* Ask server for current user list
+    // TODO: find out if this could be needed out of first load
+    if (userList.length === 0) {
+      socket?.emit("userList");
+    }
+
+    socket?.on("userList", (data: IUser[]) => {
+      setUserList(data.filter(u => u.id !== appContext.appState.user?.id));
+    })
+    
     socket?.on("users", (data: IUserEventData) => {
-      //console.log("Users : ", data);
       if(data.eventType === 'connected') {
         const userData = data.user as IUser;
         setUserList((prev) => [...prev.filter(u => u.id !== userData.id), userData])
+        //TODO: if invitation exists toward this user, update it
       }
       if(data.eventType === 'disconnected') {
         const userId = data.user as number;
@@ -34,18 +45,45 @@ export function Dashboard() {
       }
     });
 
-    socket?.on("userList", (data: IUser[]) => {
-      //console.log("User List : ", data);
-      setUserList(data);
+    socket?.on("invitation", (data) => {
+      switch(data.eventType) {
+        case "created":
+          setUserList([...userList.filter(u => u.id !== data.toId),
+            {...userList.find(u => u.id === data.toId), invite: 'to', invitationId: data.invitationId} as IUser])
+          break;
+        case "received":
+          setUserList([...userList.filter(u => u.id !== data.fromId),
+            {...userList.find(u => u.id === data.fromId), invite: 'from', invitationId: data.invitationId} as IUser])
+          break;
+        case "canceled":
+          console.log('invitation canceled : ', data.invitationId);
+          setUserList((prev) => prev.map(u => {
+            if(u.invitationId === data.invitationId) {
+              return {...u, invite: undefined, invitationId: undefined}
+            }
+            return u;
+          }));
+          break;
+        case "accepted":
+          console.log('invitation accepted : ', data.invitationId);
+          setUserList((prev) => prev.map(u => {
+            if(u.invitationId === data.invitationId) {
+              return {...u, invite: undefined, invitationId: undefined}
+            }
+            return u;
+          }))
+          break;
+        case "error":
+          console.log('Invitation error : ', data.message);
+      }
     })
-    
+
     return () => {
-      socket?.off("connect");
-      socket?.off("disconnect");
-      socket?.off("error");
-      socket?.off("users");
+      for (const event of eventNames) {
+        socket?.off(event);
+      }
     }
-  })
+  });
 
   return (
     <div className="dashboard">

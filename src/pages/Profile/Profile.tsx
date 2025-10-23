@@ -4,6 +4,7 @@ import { AppContext } from "../../contexts/appContext"
 import { Box, Button, CropperModal, FormLine } from "../../components";
 import { fetchUpdateUser } from '../../services/users.service';
 import type { IUserResponse } from '../../interfaces/IUserResponse';
+import { extension } from '../../utils/constants/extensions';
 
 export function Profile() {
   const appContext = useContext(AppContext);
@@ -21,14 +22,6 @@ export function Profile() {
       formData.delete('newPasswordConfirm');
     }
 
-    // TODO refactor to use here and in loginForm
-
-    const extension: {[index: string]:string} = {
-      'image/gif': 'gif',
-      'image/png': 'png',
-      'image/jpeg': 'jpg'
-    };
-
     async function setAvatar(formData: FormData) {
       const blob = await fetch(croppedImage).then((r) => r.blob());
       const mimeType = croppedImage.substring(
@@ -44,8 +37,6 @@ export function Profile() {
     if(croppedImage) {
       await setAvatar(formData)
     }
-
-    console.log('formData', Object.fromEntries(formData));
 
     try {
       const response: IUserResponse = await fetchUpdateUser(formData);
@@ -70,7 +61,6 @@ export function Profile() {
     catch (e) {
       console.log(e);
     }
-    
   }
 
   return (
@@ -101,7 +91,6 @@ export function Profile() {
                 {user?.avatarUrl && croppedImage &&
                   <span className='avatarChange'>{"=>"}</span>
                 }
-                
                 {croppedImage &&
                   <img className='newAvatar' alt='new avatar' src={croppedImage} />
                 }
