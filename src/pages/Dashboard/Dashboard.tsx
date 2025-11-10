@@ -1,5 +1,6 @@
-import { useContext, useEffect, useState } from "react"
-import { AppContext } from "../../contexts/appContext"
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { AppContext } from "../../contexts/appContext";
 import WsContext from "../../contexts/wsContext";
 import { type IUser, type IUserEventData } from "../../interfaces/events/IUsers";
 import { UserList } from "../../components";
@@ -8,8 +9,10 @@ import "./Dashboard.css";
 export function Dashboard() {
   const appContext = useContext(AppContext);
   const wsContext = useContext(WsContext);
+  const navigate = useNavigate();
   const socket = wsContext?.Socket;
   const [userList, setUserList] = useState<IUser[]>([]);
+  const [isUserListLoaded, setIsUserListLoaded] = useState<boolean>(false);
   const eventNames = ["connect", "disconnect", "error", "users", "userList", "invitation"];
 
   useEffect(() => {
@@ -18,20 +21,21 @@ export function Dashboard() {
     });
     socket?.on("disconnect", (reason) => {
       console.log("disconnect : ", reason);
-    })
+    });
     socket?.on("error", (error) => {
       console.log("error : ", error);
-    })
+    });
 
     //* Ask server for current user list
     // TODO: find out if this could be needed out of first load
-    if (userList.length === 0) {
+    if (!isUserListLoaded) {
       socket?.emit("userList");
     }
 
     socket?.on("userList", (data: IUser[]) => {
       setUserList(data.filter(u => u.id !== appContext.appState.user?.id));
-    })
+      setIsUserListLoaded(true);
+    });
     
     socket?.on("users", (data: IUserEventData) => {
       if(data.eventType === 'connected') {
@@ -65,18 +69,13 @@ export function Dashboard() {
           }));
           break;
         case "accepted":
-          console.log('invitation accepted : ', data.invitationId);
-          setUserList((prev) => prev.map(u => {
-            if(u.invitationId === data.invitationId) {
-              return {...u, invite: undefined, invitationId: undefined}
-            }
-            return u;
-          }))
+          console.log('invitation accepted : ', data);
+          navigate('/morpion', {state: {roomName: `${data.game}_${data.invitationId}`}});
           break;
         case "error":
           console.log('Invitation error : ', data.message);
       }
-    })
+    });
 
     return () => {
       for (const event of eventNames) {
