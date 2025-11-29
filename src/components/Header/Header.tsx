@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from 'react';
 import './Header.css'
 import { Link } from "react-router-dom";
-import { AppContext } from '../../contexts/appContext';
+import { AppContext } from '../../contexts';
 import { Box } from '../Box/Box';
 
 export function Header({ ioClose }: { ioClose?: () => void }) {

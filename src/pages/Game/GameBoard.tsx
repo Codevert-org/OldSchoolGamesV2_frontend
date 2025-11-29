@@ -9,8 +9,8 @@ interface GameBoardProps {
 
 export function GameBoard(props: GameBoardProps) {
   const cells = [];
-  for(let i = 1; i <= Number(props.cols); i++) {
-    for(let j = 1; j <= Number(props.rows); j++) {
+  for(let i = 1; i <= Number(props.rows); i++) {
+    for(let j = 1; j <= Number(props.cols); j++) {
       cells.push(`c${j}${i}`);
     }
   }
@@ -28,7 +28,7 @@ export function GameBoard(props: GameBoardProps) {
         style={{
           display: 'grid',
           width: `${props.width}px`,
-          height: `${props.width}px`,
+          height: `${Number(props.width) / Number(props.cols) * Number(props.rows)}px`,
           gridTemplateColumns: gridColumns,
         }}
       >
@@ -40,7 +40,7 @@ export function GameBoard(props: GameBoardProps) {
             style={{
               borderBottom: Number(cell.substring(2)) === Number(props.rows) ? 'none' : '1px solid green',
               borderRight: Number(cell.substring(1,2)) === Number(props.cols) ? 'none' : '1px solid green',
-              height: `${Number(props.width) / Number(props.rows)}px`,
+              height: `${Number(props.width) / Number(props.cols)}px`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

@@ -1,6 +1,6 @@
 import { useContext, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AppContext } from '../contexts/appContext';
+import { AppContext } from '../contexts';
 //import socketIOClient from 'socket.io-client';
 
 type ProtectedContentProps = {

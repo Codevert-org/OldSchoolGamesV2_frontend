@@ -1,12 +1,12 @@
-import { useLocation, useNavigate } from 'react-router'
-import { useContext, useEffect, useCallback, useRef, useState } from 'react';
-import { GameBoard } from "../GameBoard";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { WsContext, AppContext } from "../../../contexts";
+import { GameBoard } from "../GameBoard";
 import { Box, Button } from '../../../components';
 
-import './Morpion.scss';
+import './Puissance4.scss'
 
-export function Morpion() {
+export function Puissance4() {
   const wsContext = useContext(WsContext);
   const appContext = useContext(AppContext);
   const socket = wsContext?.Socket;
@@ -18,12 +18,36 @@ export function Morpion() {
   const [reloadRequestedBy, setReloadRequestedBy] = useState<string[]>([]);
   const boardEnabledRef = useRef(true);
 
+  const drawToken = (cellElement: HTMLElement, color: string, rowIndex: number) => {
+    const svgContent = `<svg width="46" height="46"><circle cx="23" cy="23" r="20" stroke="black" stroke-width="2" fill="${color}"/></svg>`;
+    cellElement.innerHTML = svgContent;
+
+    const svg = cellElement.querySelector('svg') as SVGElement;
+    if(!svg) return;
+
+    // Calculate initial position (above the gameboard, based on row index)
+    let tokenPosition = rowIndex * -100 - 100;
+    let requestId: number;
+
+    const animate = () => {
+      tokenPosition += 50;
+      svg.style.transform = `translate3d(0, ${tokenPosition}px, 0)`;
+      if(tokenPosition === 0) {
+        cancelAnimationFrame(requestId);
+      } else {
+        requestId = requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+  };
+  
   const handleCellClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if(!boardEnabledRef.current) return;
     if(socket && roomName) {
-      socket.emit('game', {eventType: 'play', roomName, cellName: event.currentTarget.id})
+      socket.emit('game', {eventType: 'play', roomName, col: event.currentTarget.id.substring(1, 2)})
     }
-  }, [socket, roomName]);
+    }, [socket, roomName]);
 
   const requestReload = () => {
     socket?.emit('game', {eventType: 'reload', roomName});
@@ -37,7 +61,7 @@ export function Morpion() {
     }
     if(socket) {
       socket.emit('game', {eventType: 'getGameData', roomName});
-      
+
       socket.on('game', (data) => {
         if(data.eventType === 'getGameData') {
           const turnLabel = document.getElementById('game-turn-data');
@@ -51,13 +75,14 @@ export function Morpion() {
           if(data.result.cellToDraw) {
             const cellElement: HTMLElement | null = document.getElementById(data.result.cellToDraw);
             if(cellElement) {
-              cellElement.innerText = data.result.token;
+              const rowIndex = Number(data.result.cellToDraw.substring(2));
+              drawToken(cellElement, data.result.token, rowIndex);
             }
             else {
               console.error('cell not found');
             }
           }
-          
+
           const turnLabel = document.getElementById('game-turn-data');
           if(turnLabel) {
             if(data.result.turn) {
@@ -81,6 +106,7 @@ export function Morpion() {
           }
         }
         if(data.eventType === 'reload') {
+          console.log('reload event received : ', data);
           if(data.result.ready) {
             // empty cells
             const cellElements = document.querySelectorAll('.cells');
@@ -103,7 +129,6 @@ export function Morpion() {
           navigate('/');
         }
       });
-
     }
     return () => {
       if(socket) {
@@ -112,12 +137,11 @@ export function Morpion() {
       }
     }
   }, [socket, roomName, navigate]);
-
-  return (
-    <div className="Morpion">
-      <div id="game-turn-data"></div>
-      <Box><GameBoard cols='3' rows='3' width='300' handleCellClick={handleCellClick} /></Box>
-      <div className='reload-handler'>
+  
+  return <div className="Puissance4">
+    <div id="game-turn-data">Puissance 4 works !</div>
+    <Box><GameBoard cols='7' rows='6' width='350' handleCellClick={handleCellClick} /></Box>
+    <div className='reload-handler'>
         {gameEnded && !reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
           <div className='reload-buttons'><Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie"/><Button type='button' callback={() => requestReload()} label="✅ rejouer" /></div>
         )}
@@ -127,6 +151,5 @@ export function Morpion() {
           )
         }
       </div>
-    </div>
-  )
+  </div>
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { AppContext, type Appstate } from "../contexts/appContext";
+import { type Appstate } from "../contexts/appContext";
+import { AppContext } from "../contexts";
 
 type AppProps = {
   children: ReactNode

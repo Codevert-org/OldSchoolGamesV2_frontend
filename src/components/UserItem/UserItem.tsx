@@ -13,12 +13,14 @@ export function UserItem({user}: {user: IUser}) {
   const socket = wsContext?.Socket;
   const [isInviteSentOpen, setIsInviteSentOpen] = useState(false);
   const [isInviteReceivedOpen, setIsInviteReceivedOpen] = useState(false);
+  const [isGameSelectionOpen, setIsGameSelectionOpen] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleInviteClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     if(!user.invite) {
-      return sendInvite();
+      // TODO switch to chooseGame when implemented
+      setIsGameSelectionOpen(true);
     }
     if(user.invite === 'to') {
       setIsInviteSentOpen(true);
@@ -27,14 +29,16 @@ export function UserItem({user}: {user: IUser}) {
       setIsInviteReceivedOpen(true);
     }
   }
-  
-  
-  const sendInvite = () => {
+
+  const sendInvite = (game: string = "morpion") => {
+    // TODO: close game selection menu
+    // setIsGameSelectionOpen(false);
+    setIsGameSelectionOpen(false);
     if (socket) {
       socket.emit("invitation", {
         eventType: "sent",
         toId: user.id,
-        game: "morpion",
+        game,
       });
     }
   }
@@ -144,6 +148,35 @@ export function UserItem({user}: {user: IUser}) {
       <Box>
         <MenuItem onClick={cancelInvite} >❌ Refuser</MenuItem>
         <MenuItem onClick={acceptInvite}>✅ Accepter</MenuItem>
+      </Box>
+    </Menu>
+    {/* Invite received menu */}
+    <Menu
+      anchorEl={anchorEl}
+      open={isGameSelectionOpen}
+      onClose={() => setIsGameSelectionOpen(false)}
+      anchorOrigin={{
+        vertical: -10,
+        horizontal: 'right',
+      }}
+      sx={{
+        '& .MuiPaper-root': {
+          backgroundColor: '#131410',
+          color: '#4a8b53',
+          borderRadius: '12px',
+          overflow: 'visible',
+        },
+        '& .MuiList-root': {
+          padding: 0,
+        },
+        '& .box': {
+          margin: 0
+        }
+      }}
+    >
+      <Box>
+        <MenuItem onClick={() => {sendInvite("morpion")}} >Morpion</MenuItem>
+        <MenuItem onClick={() => {sendInvite("puissance4")}}>Puissance 4</MenuItem>
       </Box>
     </Menu>
     </>

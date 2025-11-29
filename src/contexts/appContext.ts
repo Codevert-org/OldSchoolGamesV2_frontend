@@ -14,10 +14,12 @@ export interface AppContext {
   setAppState: Dispatch<SetStateAction<Appstate>>
 }
 
-export const AppContext: Context<AppContext> = createContext<AppContext>({
+const AppContext: Context<AppContext> = createContext<AppContext>({
   appState : {
     accessToken: '',
     user: null
   },
   setAppState: () => {}
 })
+
+export default AppContext;
