@@ -4,7 +4,7 @@ import { Switch } from '../Switch/Switch';
 import { Box } from '../Box/Box';
 import { Button } from '../Button/Button';
 import { useContext } from 'react';
-import { AppContext } from '../../contexts/appContext';
+import { AppContext } from '../../contexts';
 import { CropperModal } from '../CropperModal/CropperModal';
 import './loginForm.css'
 import { fetchAuth } from '../../services/auth.service';

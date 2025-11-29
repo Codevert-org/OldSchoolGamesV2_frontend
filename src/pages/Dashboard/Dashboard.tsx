@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AppContext } from "../../contexts/appContext";
+import { AppContext } from "../../contexts";
 import WsContext from "../../contexts/wsContext";
 import { type IUser, type IUserEventData } from "../../interfaces/events/IUsers";
 import { UserList } from "../../components";
@@ -70,7 +70,8 @@ export function Dashboard() {
           break;
         case "accepted":
           console.log('invitation accepted : ', data);
-          navigate('/morpion', {state: {roomName: `${data.game}_${data.invitationId}`}});
+          // TODO redirect to game page corresponding to data.game when implemented
+          navigate(`/${data.game}`, {state: {roomName: `${data.game}_${data.invitationId}`}});
           break;
         case "error":
           console.log('Invitation error : ', data.message);

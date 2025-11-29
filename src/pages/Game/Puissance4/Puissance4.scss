@@ -1,0 +1,20 @@
+.Puissance4 {
+  & .game-grid {
+    margin: 5px;
+  }
+  & #game-turn-data {
+    text-align: center;
+    padding: 20px 0;
+  }
+  & .reload-handler {
+    text-align: center;
+  }
+  & .reload-buttons {
+    display: flex;
+    width: fit-content;
+    margin: auto;
+    & .button_wrapper {
+      margin : 10px;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import './Profile.css';
 import { useContext, useRef, useState } from "react"
-import { AppContext } from "../../contexts/appContext"
+import { AppContext } from "../../contexts"
 import { Box, Button, CropperModal, FormLine } from "../../components";
 import { fetchUpdateUser } from '../../services/users.service';
 import type { IUserResponse } from '../../interfaces/IUserResponse';
