@@ -177,6 +177,7 @@ export function UserItem({user}: {user: IUser}) {
       <Box>
         <MenuItem onClick={() => {sendInvite("morpion")}} >Morpion</MenuItem>
         <MenuItem onClick={() => {sendInvite("puissance4")}}>Puissance 4</MenuItem>
+        <MenuItem onClick={() => {sendInvite("reversi")}}>Reversi</MenuItem>
       </Box>
     </Menu>
     </>
