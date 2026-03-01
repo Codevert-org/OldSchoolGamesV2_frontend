@@ -6,6 +6,8 @@ import { type IUser, type IUserEventData } from "../../interfaces/events/IUsers"
 import { type INotification, NotificationFeed, UserList } from "../../components";
 import "./Dashboard.css";
 
+const EVENT_NAMES = ["connect", "disconnect", "error", "users", "userList", "invitation"];
+
 export function Dashboard() {
   const appContext = useContext(AppContext);
   const wsContext = useContext(WsContext);
@@ -17,7 +19,6 @@ export function Dashboard() {
   const notifIdRef = useRef(0);
   const userListRef = useRef(userList);
   userListRef.current = userList;
-  const eventNames = ["connect", "disconnect", "error", "users", "userList", "invitation"];
 
   const pushNotification = useCallback((message: string) => {
     const id = ++notifIdRef.current;
@@ -96,7 +97,7 @@ export function Dashboard() {
     });
 
     return () => {
-      for (const event of eventNames) {
+      for (const event of EVENT_NAMES) {
         socket?.off(event);
       }
     }

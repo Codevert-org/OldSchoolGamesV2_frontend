@@ -27,6 +27,8 @@ function AppProvider({children} : AppProps) {
       }
     }
     fetchUser();
+  // Intentionnel : exécution au montage uniquement — relancer sur chaque changement de token provoquerait une boucle
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

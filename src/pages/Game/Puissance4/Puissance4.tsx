@@ -84,8 +84,6 @@ export function Puissance4() {
       }
       boardEnabledRef.current = !gameResult?.winner && !gameResult?.draw;
     }
-  // drawToken est défini dans le scope du composant, pas une dépendance stable — intentionnel
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleReload = useCallback((data: IGameEventData) => {

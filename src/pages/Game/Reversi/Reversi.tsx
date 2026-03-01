@@ -66,21 +66,6 @@ export function Reversi() {
     socket?.emit('game', { eventType: 'reload', roomName });
   };
 
-  const renderToken = useCallback((cellId: string, color: string, flip: boolean) => {
-    const fromColor = cellColorsRef.current[cellId];
-    cellColorsRef.current[cellId] = color;
-    return (
-      <span ref={(el) => {
-        if (!el) return;
-        if (flip && fromColor) {
-          flipToken(el as unknown as HTMLElement, TOKEN_COLORS[fromColor] ?? fromColor, TOKEN_COLORS[color] ?? color);
-        } else {
-          drawToken(el as unknown as HTMLElement, TOKEN_COLORS[color] ?? color);
-        }
-      }} />
-    );
-  }, []);
-
   const handlePlay = useCallback((data: IGameEventData) => {
     if (data.result.cellToDraw && data.result.token) {
       const cellId = data.result.cellToDraw;
