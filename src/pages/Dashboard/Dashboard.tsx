@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { AppContext } from "../../contexts";
 import WsContext from "../../contexts/wsContext";
 import { type IUser, type IUserEventData } from "../../interfaces/events/IUsers";
-import { UserList } from "../../components";
+import { type INotification, NotificationFeed, UserList } from "../../components";
 import "./Dashboard.css";
 
 export function Dashboard() {
@@ -13,7 +13,17 @@ export function Dashboard() {
   const socket = wsContext?.Socket;
   const [userList, setUserList] = useState<IUser[]>([]);
   const [isUserListLoaded, setIsUserListLoaded] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
+  const notifIdRef = useRef(0);
+  const userListRef = useRef(userList);
+  userListRef.current = userList;
   const eventNames = ["connect", "disconnect", "error", "users", "userList", "invitation"];
+
+  const pushNotification = useCallback((message: string) => {
+    const id = ++notifIdRef.current;
+    setNotifications((prev) => [{ id, message }, ...prev]);
+    setTimeout(() => setNotifications((prev) => prev.filter((n) => n.id !== id)), 5000);
+  }, []);
 
   useEffect(() => {
     socket?.on("connect", () => {
@@ -40,24 +50,31 @@ export function Dashboard() {
     socket?.on("users", (data: IUserEventData) => {
       if(data.eventType === 'connected') {
         const userData = data.user as IUser;
-        setUserList((prev) => [...prev.filter(u => u.id !== userData.id), userData])
+        setUserList((prev) => [...prev.filter(u => u.id !== userData.id), userData]);
+        pushNotification(`${userData.pseudo} vient de se connecter`);
         //TODO: if invitation exists toward this user, update it
       }
       if(data.eventType === 'disconnected') {
         const userId = data.user as number;
+        const disconnectedUser = userListRef.current.find(u => u.id === userId);
         setUserList((prev) => prev.filter(u => u.id !== userId));
+        if(disconnectedUser) pushNotification(`${disconnectedUser.pseudo} vient de se déconnecter`);
+      }
+      if(data.eventType === 'registered') {
+        const userData = data.user as IUser;
+        pushNotification(`${userData.pseudo} vient de rejoindre OldSchoolGames !`);
       }
     });
 
     socket?.on("invitation", (data) => {
       switch(data.eventType) {
         case "created":
-          setUserList([...userList.filter(u => u.id !== data.toId),
-            {...userList.find(u => u.id === data.toId), invite: 'to', invitationId: data.invitationId} as IUser])
+          setUserList((prev) => [...prev.filter(u => u.id !== data.toId),
+            {...prev.find(u => u.id === data.toId), invite: 'to', invitationId: data.invitationId} as IUser]);
           break;
         case "received":
-          setUserList([...userList.filter(u => u.id !== data.fromId),
-            {...userList.find(u => u.id === data.fromId), invite: 'from', invitationId: data.invitationId} as IUser])
+          setUserList((prev) => [...prev.filter(u => u.id !== data.fromId),
+            {...prev.find(u => u.id === data.fromId), invite: 'from', invitationId: data.invitationId} as IUser]);
           break;
         case "canceled":
           console.log('invitation canceled : ', data.invitationId);
@@ -83,12 +100,13 @@ export function Dashboard() {
         socket?.off(event);
       }
     }
-  });
+  }, [socket, navigate, appContext.appState.user?.id, isUserListLoaded, pushNotification]);
 
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
       <p>Welcome, {appContext.appState.user?.pseudo}</p>
+      <NotificationFeed notifications={notifications} />
       <UserList users={userList}/>
     </div>
   )

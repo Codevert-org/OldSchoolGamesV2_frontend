@@ -19,7 +19,8 @@ export function LoginForm() {
   const [croppedImage, setCroppedImage] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const formRef = useRef(null);
-  const errorRef = useRef(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [avatarWarning, setAvatarWarning] = useState<string>('');
   const switchIndex = () => {
     setfirstIsActive(!firstIsActive)
   }
@@ -60,25 +61,23 @@ export function LoginForm() {
   }
 
   async function handleFetch(endpoint: 'login' | 'register', body: string | FormData) {
-    if(errorRef.current) {
-      const errorElt: HTMLElement = errorRef.current;
-      errorElt.innerHTML = '';
-    }
+    setErrorMessage('');
+    setAvatarWarning('');
     try {
       const response: IAuthResponse = await fetchAuth(endpoint, body);
-      //? handle response type
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('userInfos', JSON.stringify(response.user));
       appContext.setAppState({ accessToken: response.accessToken, user: response.user });
+      if(response.avatarMessage) {
+        setAvatarWarning(response.avatarMessage);
+        return;
+      }
       navigate('/');
     }
     catch (e) {
       console.log(e);
       const error = e as IApiError;
-      if(errorRef.current) {
-        const errorElt: HTMLElement = errorRef.current;
-        errorElt.innerHTML = error.message;
-      }
+      setErrorMessage(error.message);
     }
   }
 
@@ -123,9 +122,13 @@ export function LoginForm() {
           <Button type='submit' label="Valider"/>
         </form>
       </Box>
-      <div className="error-message" ref={errorRef}>
-
-      </div>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      {avatarWarning && (
+        <div className="avatar-warning">
+          <p>{avatarWarning}</p>
+          <Button type='button' label="Continuer" callback={() => navigate('/')} />
+        </div>
+      )}
     </div>
     </>
   )

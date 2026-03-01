@@ -7,6 +7,6 @@ export interface IUser {
 }
 
 export interface IUserEventData {
-  eventType: 'connected' | 'disconnected';
+  eventType: 'connected' | 'disconnected' | 'registered';
   user: IUser | number;
 }

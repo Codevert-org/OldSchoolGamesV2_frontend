@@ -27,7 +27,7 @@ function AppProvider({children} : AppProps) {
       }
     }
     fetchUser();
-  })
+  }, [])
 
   return (
     <AppContext.Provider value={value}>

@@ -1,0 +1,27 @@
+.notification-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.notification-feed__item {
+  padding: 8px 12px;
+  border-left: 3px solid #4a8b53;
+  background-color: rgba(74, 139, 83, 0.1);
+  font-size: 0.9rem;
+  animation: notification-slide-in 0.2s ease-out;
+}
+
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

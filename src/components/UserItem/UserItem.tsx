@@ -96,7 +96,7 @@ export function UserItem({user}: {user: IUser}) {
     <Menu
       anchorEl={anchorEl}
       open={isInviteSentOpen}
-      onClose={() => setIsInviteSentOpen(false)}
+      onClose={() => { setIsInviteSentOpen(false); setAnchorEl(null); }}
       anchorOrigin={{
         vertical: -10,
         horizontal: 'right',
@@ -119,13 +119,13 @@ export function UserItem({user}: {user: IUser}) {
       <Box>
         <MenuItem onClick={cancelInvite} >❌ Annuler</MenuItem>
       </Box>
-      
+
     </Menu>
     {/* Invite received menu */}
     <Menu
       anchorEl={anchorEl}
       open={isInviteReceivedOpen}
-      onClose={() => setIsInviteReceivedOpen(false)}
+      onClose={() => { setIsInviteReceivedOpen(false); setAnchorEl(null); }}
       anchorOrigin={{
         vertical: -10,
         horizontal: 'right',
@@ -150,11 +150,11 @@ export function UserItem({user}: {user: IUser}) {
         <MenuItem onClick={acceptInvite}>✅ Accepter</MenuItem>
       </Box>
     </Menu>
-    {/* Invite received menu */}
+    {/* Game selection menu */}
     <Menu
       anchorEl={anchorEl}
       open={isGameSelectionOpen}
-      onClose={() => setIsGameSelectionOpen(false)}
+      onClose={() => { setIsGameSelectionOpen(false); setAnchorEl(null); }}
       anchorOrigin={{
         vertical: -10,
         horizontal: 'right',

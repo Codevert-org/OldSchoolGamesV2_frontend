@@ -1,0 +1,24 @@
+.Reversi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+
+  #game-turn-data {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .reload-handler {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .reload-buttons {
+      display: flex;
+      gap: 12px;
+    }
+  }
+}

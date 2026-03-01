@@ -1,3 +1,4 @@
+import React from 'react';
 import './GameBoard.scss';
 
 interface GameBoardProps {
@@ -5,6 +6,7 @@ interface GameBoardProps {
   rows: string;
   width: string;
   handleCellClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  cellsContent?: Record<string, React.ReactNode>;
 }
 
 export function GameBoard(props: GameBoardProps) {
@@ -47,7 +49,7 @@ export function GameBoard(props: GameBoardProps) {
               fontSize: (Number(props.width)/Number(props.cols)) * 0.2,
             }}
             onClick={props.handleCellClick}
-          ></div>
+          >{props.cellsContent?.[cell]}</div>
         ))}
       </div>
     </div>
