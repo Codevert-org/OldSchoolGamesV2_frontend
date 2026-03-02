@@ -53,6 +53,26 @@ form {
   font-size: 0.9rem;
 }
 
+.pseudo-status {
+  font-size: 0.85rem;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  text-align: right;
+}
+.pseudo-status--available { color: #4caf50; }
+.pseudo-status--taken { color: #d32f2f; }
+.pseudo-status--checking { color: #888; }
+
+.password-rules {
+  list-style: none;
+  margin: 4px 0 8px 0;
+  padding: 0 0 0 8px;
+  font-size: 0.85rem;
+
+  & .rule-ok { color: #4caf50; }
+  & .rule-ko { color: #d32f2f; }
+}
+
 .avatar-warning {
   margin-top: 12px;
   padding: 10px 14px;

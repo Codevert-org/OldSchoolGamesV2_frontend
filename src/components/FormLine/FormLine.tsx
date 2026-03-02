@@ -1,12 +1,19 @@
+import type { ChangeEvent } from 'react';
+
 type formLineProps = {
   name: string;
   inputType?: string;
   label?: string;
   value?: string;
   required?: boolean;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function FormLine(props: formLineProps) {
+  const inputProps = props.onChange
+    ? { value: props.value ?? '', onChange: props.onChange }
+    : { defaultValue: props.value || '' };
+
   return (
     <div className="form-line">
       <label htmlFor={props.name}>
@@ -14,9 +21,11 @@ export function FormLine(props: formLineProps) {
       </label>
       <input
         type={props.inputType || 'text'}
-        id={props.name} name={props.name}
-        defaultValue={props.value || ''}
-        required={props.required || false} />
+        id={props.name}
+        name={props.name}
+        required={props.required || false}
+        {...inputProps}
+      />
     </div>
-  )
+  );
 }
