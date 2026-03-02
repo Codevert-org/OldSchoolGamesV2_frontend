@@ -3,6 +3,7 @@ import { useContext, useEffect, useCallback, useRef, useState } from 'react';
 import { GameBoard } from "../GameBoard";
 import { WsContext, AppContext } from "../../../contexts";
 import { Box, Button } from '../../../components';
+import type { IGameEventData } from "../../../interfaces/events/IGame";
 
 import './Morpion.scss';
 
@@ -16,6 +17,8 @@ export function Morpion() {
   const [opponent, setOpponent] = useState<string | null>(null);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [reloadRequestedBy, setReloadRequestedBy] = useState<string[]>([]);
+  const [cells, setCells] = useState<Record<string, string>>({});
+  const [turn, setTurn] = useState<string>('');
   const boardEnabledRef = useRef(true);
 
   const handleCellClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -29,6 +32,39 @@ export function Morpion() {
     socket?.emit('game', {eventType: 'reload', roomName});
   }
 
+  const handlePlay = useCallback((data: IGameEventData) => {
+    if(data.result.cellToDraw && data.result.token) {
+      const cellId = data.result.cellToDraw;
+      const token = data.result.token;
+      setCells((prev) => ({ ...prev, [cellId]: token }));
+    }
+    if(data.result.turn) {
+      setTurn(`À ${data.result.turn} de jouer`);
+    } else {
+      const gameResult = data.result.result;
+      if(gameResult?.winner) {
+        setTurn(`${gameResult.winner} a gagné !`);
+        setGameEnded(true);
+      } else if(gameResult?.draw) {
+        setTurn('match nul !');
+        setGameEnded(true);
+      }
+      boardEnabledRef.current = !gameResult?.winner && !gameResult?.draw;
+    }
+  }, []);
+
+  const handleReload = useCallback((data: IGameEventData) => {
+    if(data.result.ready) {
+      setCells({});
+      setTurn(`À ${data.result.turn} de jouer`);
+      setReloadRequestedBy([]);
+      setGameEnded(false);
+      boardEnabledRef.current = true;
+    } else {
+      setReloadRequestedBy(data.result.requestedBy ?? []);
+    }
+  }, []);
+
   useEffect(() => {
     if(!roomName) {
       console.log('no room name, redirecting to dashboard');
@@ -37,73 +73,23 @@ export function Morpion() {
     }
     if(socket) {
       socket.emit('game', {eventType: 'getGameData', roomName});
-      
+
       socket.on('game', (data) => {
+        if(data.result?.error) {
+          setTurn(`Erreur : ${data.result.error}`);
+          return;
+        }
         if(data.eventType === 'getGameData') {
-          const turnLabel = document.getElementById('game-turn-data');
-          //TODO utiliser useRef ?
           setOpponent(data.result.opponent);
-          if(turnLabel) {
-            turnLabel.innerText = `À ${data.result.turn} de jouer`;
-          }
+          setTurn(`À ${data.result.turn} de jouer`);
         }
-        if(data.eventType === 'play') {
-          if(data.result.cellToDraw) {
-            const cellElement: HTMLElement | null = document.getElementById(data.result.cellToDraw);
-            if(cellElement) {
-              cellElement.innerText = data.result.token;
-            }
-            else {
-              console.error('cell not found');
-            }
-          }
-          
-          const turnLabel = document.getElementById('game-turn-data');
-          if(turnLabel) {
-            if(data.result.turn) {
-              turnLabel.innerText = `À ${data.result.turn} de jouer`;
-            }
-            else {
-              if(data.result.result.winner) {
-                turnLabel.innerText = `${data.result.result.winner} a gagné !`;
-                // TODO color cells.
-                setGameEnded(true);
-              }
-              else if(data.result.result.draw) {
-                turnLabel.innerText = "match nul !";
-                setGameEnded(true);
-              }
-              boardEnabledRef.current = !data.result.result.winner && !data.result.result.draw;
-            }
-          }
-          else {
-            console.error('turn label not found');
-          }
-        }
-        if(data.eventType === 'reload') {
-          if(data.result.ready) {
-            // empty cells
-            const cellElements = document.querySelectorAll('.cells');
-            cellElements.forEach((cell) => cell.innerHTML = '');
-            // set turn
-            const turnLabel = document.getElementById('game-turn-data');
-            if(turnLabel) {
-              turnLabel.innerText = `À ${data.result.turn} de jouer`;
-            }
-            // reset reloadRequestedBy and gameEnded
-            setReloadRequestedBy([]);
-            setGameEnded(false);
-            boardEnabledRef.current = true;
-          } else {
-            setReloadRequestedBy(data.result.requestedBy);
-          }
-        }
+        if(data.eventType === 'play') handlePlay(data);
+        if(data.eventType === 'reload') handleReload(data);
         if(data.eventType === 'leave') {
           console.log('game left');
           navigate('/');
         }
       });
-
     }
     return () => {
       if(socket) {
@@ -111,12 +97,12 @@ export function Morpion() {
         socket.off('game');
       }
     }
-  }, [socket, roomName, navigate]);
+  }, [socket, roomName, navigate, handlePlay, handleReload]);
 
   return (
     <div className="Morpion">
-      <div id="game-turn-data"></div>
-      <Box><GameBoard cols='3' rows='3' width='300' handleCellClick={handleCellClick} /></Box>
+      <div id="game-turn-data">{turn}</div>
+      <Box><GameBoard cols='3' rows='3' width='300' handleCellClick={handleCellClick} cellsContent={cells} /></Box>
       <div className='reload-handler'>
         {gameEnded && !reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
           <div className='reload-buttons'><Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie"/><Button type='button' callback={() => requestReload()} label="✅ rejouer" /></div>

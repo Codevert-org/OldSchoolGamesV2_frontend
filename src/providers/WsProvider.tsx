@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import socketIOClient from "socket.io-client";
 
 import WsContext from "../contexts/wsContext";
@@ -13,16 +13,13 @@ function WsProvider({children} : IoSocketProviderProps) {
         ioUrl = `${import.meta.env.VITE_BACKEND_URL}/events`;
     }
 
-    const Socket = socketIOClient(ioUrl, { transports: ['websocket'], auth: {token: localStorage.getItem('accessToken')}});
-
-    function ioClose() {
-        Socket.close();
-    }
-
-    const value = {
-        Socket,
-        ioClose
-    }
+    const value = useMemo(() => {
+        const Socket = socketIOClient(ioUrl, { transports: ['websocket'], auth: {token: localStorage.getItem('accessToken')}});
+        function ioClose() {
+            Socket.close();
+        }
+        return { Socket, ioClose };
+    }, [ioUrl])
 
     return (
       <WsContext.Provider value={value}>

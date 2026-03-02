@@ -45,5 +45,41 @@ form {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  
+}
+
+.error-message {
+  color: #d32f2f;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.pseudo-status {
+  font-size: 0.85rem;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  text-align: right;
+}
+.pseudo-status--available { color: #4caf50; }
+.pseudo-status--taken { color: #d32f2f; }
+.pseudo-status--checking { color: #888; }
+
+.password-rules {
+  list-style: none;
+  margin: 4px 0 8px 0;
+  padding: 0 0 0 8px;
+  font-size: 0.85rem;
+
+  & .rule-ok { color: #4caf50; }
+  & .rule-ko { color: #d32f2f; }
+}
+
+.avatar-warning {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-left: 3px solid #f57c00;
+  background-color: rgba(245, 124, 0, 0.1);
+  font-size: 0.9rem;
+  & p {
+    margin: 0 0 8px 0;
+  }
 }

@@ -8,3 +8,4 @@ export * from './Switch/Switch';
 export * from './ProtectedContent';
 export * from './UserList/UserList';
 export * from './UserItem/UserItem';
+export * from './NotificationFeed/NotificationFeed';

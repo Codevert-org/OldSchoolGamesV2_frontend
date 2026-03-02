@@ -1,5 +1,14 @@
 import { checkResponse } from "./checkResponse";
 
+export async function checkPseudoAvailable(pseudo: string): Promise<boolean> {
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/users/check-pseudo?pseudo=${encodeURIComponent(pseudo)}`
+  );
+  if (!response.ok) return false;
+  const json = await response.json();
+  return json.available === true;
+}
+
 export async function fetchMe() {
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/me`,
     {
