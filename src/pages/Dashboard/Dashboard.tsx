@@ -110,45 +110,56 @@ export function Dashboard() {
     }
   }, [socket, navigate, appContext.appState.user?.id, isUserListLoaded, pushNotification]);
 
-  const GAMES = ['morpion', 'puissance4', 'reversi'] as const;
   const PERIOD_LABELS: Record<StatsPeriod, string> = { week: 'Semaine', month: 'Mois', year: 'Année' };
+
+  const TABS = ['global', 'morpion', 'puissance4', 'reversi'] as const;
+  type Tab = typeof TABS[number];
+  const [activeTab, setActiveTab] = useState<Tab>('global');
+
+  let statsData = null;
+  if (stats) {
+    statsData = activeTab === 'global' ? stats.global : stats.byGame[activeTab];
+  }
 
   return (
     <div className="dashboard">
-      <h1>Dashboard</h1>
-      <p>Welcome, {appContext.appState.user?.pseudo}</p>
-      <NotificationFeed notifications={notifications} />
-      <div className="dashboard-stats">
-        <div className="dashboard-stats__header">
-          <span>Statistiques</span>
-          <div className="dashboard-stats__periods">
-            {(['week', 'month', 'year'] as StatsPeriod[]).map((p) => (
-              <button
-                key={p}
-                className={`dashboard-stats__period${period === p ? ' dashboard-stats__period--active' : ''}`}
-                onClick={() => setPeriod(p)}
-              >
-                {PERIOD_LABELS[p]}
-              </button>
-            ))}
+      <UserList users={userList}/>
+      <div className="dashboard-right">
+        <div className="dashboard-main">
+          <h1>Dashboard</h1>
+          <p>Welcome, {appContext.appState.user?.pseudo}</p>
+          <div className="dashboard-stats">
+            <div className="dashboard-stats__tabs">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  className={`dashboard-stats__tab${activeTab === t ? ' dashboard-stats__tab--active' : ''}`}
+                  onClick={() => setActiveTab(t)}
+                >
+                  {t === 'global' ? 'Global' : t.charAt(0).toUpperCase() + t.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className="dashboard-stats__periods">
+              {(['week', 'month', 'year'] as StatsPeriod[]).map((p) => (
+                <button
+                  key={p}
+                  className={`dashboard-stats__period${period === p ? ' dashboard-stats__period--active' : ''}`}
+                  onClick={() => setPeriod(p)}
+                >
+                  {PERIOD_LABELS[p]}
+                </button>
+              ))}
+            </div>
+            {statsData && (
+              <div className="dashboard-stats__body">
+                <span>{statsData.total} parties — {statsData.wins}V / {statsData.losses}D / {statsData.draws}N — {statsData.ratio}%</span>
+              </div>
+            )}
           </div>
         </div>
-        {stats && (
-          <div className="dashboard-stats__body">
-            <div className="dashboard-stats__global">
-              <span>Global</span>
-              <span>{stats.global.total} parties — {stats.global.wins}V / {stats.global.losses}D / {stats.global.draws}N — {stats.global.ratio}%</span>
-            </div>
-            {GAMES.map((g) => (
-              <div key={g} className="dashboard-stats__game">
-                <span>{g}</span>
-                <span>{stats.byGame[g].total} parties — {stats.byGame[g].wins}V / {stats.byGame[g].losses}D / {stats.byGame[g].draws}N — {stats.byGame[g].ratio}%</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <NotificationFeed notifications={notifications} />
       </div>
-      <UserList users={userList}/>
     </div>
   )
 }

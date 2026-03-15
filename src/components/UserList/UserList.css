@@ -1,9 +1,7 @@
 .userList {
-  position: absolute;
-    top: 0px;
-    bottom: 0px;
-    width: 20%;
-    box-shadow: 0px 6px 10px #4a8b53;
+  height: 100%;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px #4a8b53;
   & .userList-title {
     display: block;
     margin: 15px 10px;

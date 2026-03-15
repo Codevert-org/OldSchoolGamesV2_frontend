@@ -32,5 +32,5 @@ export const ProtectedContent = ({ children }: ProtectedContentProps) => {
   //   appContext.setAppState({accessToken: '', user: null});
   // });
 
-  return <div>{children}</div>
+  return <>{children}</>
 }
