@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
 
-html, #root, #root > div {
-	height: 100%
+html, #root {
+	height: 100dvh;
 }
 
 body {
@@ -9,7 +9,7 @@ body {
 	padding: 0;
 	background-color: #131410;
 	color: #4a8b53;
-	height: 100%;
+	height: 100dvh;
 }
 
 body,

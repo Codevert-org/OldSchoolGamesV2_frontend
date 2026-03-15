@@ -4,6 +4,7 @@ import { AppContext } from "../../contexts";
 import WsContext from "../../contexts/wsContext";
 import { type IUser, type IUserEventData } from "../../interfaces/events/IUsers";
 import { type INotification, NotificationFeed, UserList } from "../../components";
+import { fetchStats, type IStats, type StatsPeriod } from "../../services/users.service";
 import "./Dashboard.css";
 
 const EVENT_NAMES = ["connect", "disconnect", "error", "users", "userList", "invitation"];
@@ -16,9 +17,15 @@ export function Dashboard() {
   const [userList, setUserList] = useState<IUser[]>([]);
   const [isUserListLoaded, setIsUserListLoaded] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [stats, setStats] = useState<IStats | null>(null);
+  const [period, setPeriod] = useState<StatsPeriod>('week');
   const notifIdRef = useRef(0);
   const userListRef = useRef(userList);
   userListRef.current = userList;
+
+  useEffect(() => {
+    fetchStats(period).then(setStats).catch(() => setStats(null));
+  }, [period]);
 
   const pushNotification = useCallback((message: string) => {
     const id = ++notifIdRef.current;
@@ -103,11 +110,44 @@ export function Dashboard() {
     }
   }, [socket, navigate, appContext.appState.user?.id, isUserListLoaded, pushNotification]);
 
+  const GAMES = ['morpion', 'puissance4', 'reversi'] as const;
+  const PERIOD_LABELS: Record<StatsPeriod, string> = { week: 'Semaine', month: 'Mois', year: 'Année' };
+
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
       <p>Welcome, {appContext.appState.user?.pseudo}</p>
       <NotificationFeed notifications={notifications} />
+      <div className="dashboard-stats">
+        <div className="dashboard-stats__header">
+          <span>Statistiques</span>
+          <div className="dashboard-stats__periods">
+            {(['week', 'month', 'year'] as StatsPeriod[]).map((p) => (
+              <button
+                key={p}
+                className={`dashboard-stats__period${period === p ? ' dashboard-stats__period--active' : ''}`}
+                onClick={() => setPeriod(p)}
+              >
+                {PERIOD_LABELS[p]}
+              </button>
+            ))}
+          </div>
+        </div>
+        {stats && (
+          <div className="dashboard-stats__body">
+            <div className="dashboard-stats__global">
+              <span>Global</span>
+              <span>{stats.global.total} parties — {stats.global.wins}V / {stats.global.losses}D / {stats.global.draws}N — {stats.global.ratio}%</span>
+            </div>
+            {GAMES.map((g) => (
+              <div key={g} className="dashboard-stats__game">
+                <span>{g}</span>
+                <span>{stats.byGame[g].total} parties — {stats.byGame[g].wins}V / {stats.byGame[g].losses}D / {stats.byGame[g].draws}N — {stats.byGame[g].ratio}%</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       <UserList users={userList}/>
     </div>
   )
