@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Interface web moderne pour jouer aux jeux rétro en ligne**
+**Interface web retro/arcade pour jouer aux jeux classiques en ligne**
 
 Built with **React 19** • **TypeScript** • **Vite** • **Socket.IO**
 
@@ -12,18 +12,19 @@ Built with **React 19** • **TypeScript** • **Vite** • **Socket.IO**
 
 ## 📋 À propos
 
-OldSchoolGames V2 Frontend est une application web avec interface rétro/arcade qui offre une expérience utilisateur authentique pour jouer aux jeux classiques en ligne. Elle se connecte à l'API backend en temps réel via WebSocket pour synchroniser les parties entre joueurs.
+OldSchoolGames V2 Frontend est une SPA avec thème rétro arcade qui se connecte au backend en temps réel via WebSocket pour synchroniser les parties entre joueurs.
 
 ### Fonctionnalités principales
 
-- ✅ **Interface rétro arcade** - Thème vert CRT inspiré des années 80/90
+- ✅ **Interface rétro arcade** - Thème vert CRT, police Sixtyfour, fond noir
 - ✅ **Authentification JWT** - Gestion des tokens et sessions utilisateur
 - ✅ **Profils personnalisés** - Upload d'avatars avec cropping interactif
 - ✅ **Système d'invitations** - Inviter d'autres joueurs en temps réel
 - ✅ **Communication temps réel** - WebSocket (Socket.IO) pour synchronisation live
-- ✅ **Jeu Morpion multiplayer** - Tic-Tac-Toe complet avec grille interactive
-- ✅ **Liste d'utilisateurs en ligne** - Affichage en temps réel des joueurs connectés
-- ✅ **Build optimisé** - Vite pour performance maximale
+- ✅ **Notifications live** - Connexions, déconnexions, inscriptions (NotificationFeed)
+- ✅ **Jeu Morpion** - Grille 3×3 interactive, multiplayer
+- ✅ **Jeu Puissance4** - Grille 7×6 interactive, multiplayer
+- ✅ **Jeu Reversi** - Grille 8×8, animation flip SVG des pions retournés
 
 ---
 
@@ -31,16 +32,14 @@ OldSchoolGames V2 Frontend est une application web avec interface rétro/arcade 
 
 | Catégorie | Technologies |
 |-----------|--------------|
-| **Framework** | React 19, TypeScript 5.8 |
-| **Build Tool** | Vite 7.0 |
-| **Temps réel** | Socket.IO Client 4.8 |
-| **Routing** | React Router DOM 7.7 |
-| **UI Components** | Material-UI 7.3 |
-| **Styling** | CSS, SCSS |
-| **Image Cropping** | React Easy Crop 5.5 |
-| **HTTP Client** | Fetch API |
+| **Framework** | React 19, TypeScript |
+| **Build Tool** | Vite 7 |
+| **Temps réel** | Socket.IO Client 4 |
+| **Routing** | React Router DOM 7 |
+| **UI Components** | Material-UI 7 (menus dropdown uniquement) |
+| **Styling** | CSS + SCSS |
+| **Image Cropping** | React Easy Crop |
 | **State Management** | React Context API |
-| **Linting** | ESLint + TypeScript ESLint |
 
 ---
 
@@ -48,63 +47,56 @@ OldSchoolGames V2 Frontend est une application web avec interface rétro/arcade 
 
 ```
 src/
-├── components/              # 11 composants réutilisables
-│   ├── Box/                # Wrapper générique avec className
-│   ├── Button/             # Bouton avec callback
-│   ├── CropperModal/       # Modal de cropping d'image
-│   ├── FormLine/           # Champ de formulaire wrapper
-│   ├── Header/             # Barre de navigation supérieure
-│   ├── LoginForm/          # Formulaire de connexion/inscription
-│   ├── Switch/             # Toggle switch login/register
-│   ├── UserItem/           # Carte utilisateur avec invitations
-│   ├── UserList/           # Conteneur liste d'utilisateurs
-│   ├── ProtectedContent.tsx # Guard de route (redirige vers login)
-│   └── index.ts            # Exports centralisés
+├── components/              # Composants réutilisables
+│   ├── Box/
+│   ├── Button/
+│   ├── CropperModal/        # Modal de cropping avatar
+│   ├── FormLine/
+│   ├── Header/
+│   ├── LoginForm/           # Login + Register (même composant, switch)
+│   ├── NotificationFeed/    # Bandeau connexions/déconnexions/inscriptions
+│   ├── Switch/
+│   ├── UserItem/            # Carte joueur + menu invitation
+│   ├── UserList/
+│   ├── ProtectedContent.tsx # Guard → redirect /login si pas de token
+│   └── index.ts
 │
-├── contexts/                # Context API pour l'état global
-│   ├── appContext.ts       # État app (token, user)
-│   └── wsContext.ts        # Connexion WebSocket (Socket.IO)
+├── contexts/
+│   ├── appContext.ts        # {accessToken, user} + setter
+│   └── wsContext.ts        # {socket: SocketIO, ioClose: fn}
 │
-├── hooks/                   # Hooks personnalisés
-│   └── useWsSocket.ts      # Hook pour accéder au contexte WebSocket
+├── providers/
+│   ├── AppProvider.tsx      # Charge user depuis localStorage au montage
+│   └── WsProvider.tsx       # Initialise Socket.IO avec token
 │
-├── pages/                   # Pages et routes
-│   ├── Dashboard/          # Liste utilisateurs, invitations
+├── pages/
+│   ├── Dashboard/           # Liste joueurs, invitations, NotificationFeed
 │   ├── Game/
-│   │   ├── GameBoard.tsx   # Composant grille générique
-│   │   └── Morpion/        # Jeu Tic-Tac-Toe
-│   ├── Home/               # Layout principal avec Header
-│   ├── Login/              # Page d'authentification
-│   └── Profile/            # Édition profil, avatar, mot de passe
+│   │   ├── GameBoard.tsx    # Grille générique (cols, rows, cellsContent, handleCellClick)
+│   │   ├── Morpion/
+│   │   ├── Puissance4/
+│   │   └── Reversi/         # Animation flip SVG (ellipse)
+│   ├── Home/                # Layout avec Header
+│   ├── Login/
+│   └── Profile/             # Édition profil, avatar, mot de passe
 │
-├── providers/               # Providers React
-│   ├── AppProvider.tsx     # Initialise état app + localStorage
-│   └── WsProvider.tsx      # Crée connexion Socket.IO
+├── services/                # Couche fetch
+│   ├── auth.service.ts
+│   ├── users.service.ts
+│   └── checkResponse.ts
 │
-├── services/                # Services API HTTP
-│   ├── auth.service.ts     # Endpoints auth (login/register)
-│   ├── users.service.ts    # Endpoints utilisateurs
-│   └── checkResponse.ts    # Gestion erreurs API
-│
-├── interfaces/              # Types TypeScript
-│   ├── events/             # Types événements WebSocket
-│   │   ├── IUsers.ts
+├── interfaces/              # Types TypeScript (préfixe I)
+│   ├── events/
+│   │   ├── IUsers.ts        # IUserEventData: connected | disconnected | registered
+│   │   ├── IGameEventData.ts # cells?, flippedCells?, pass?, error?
 │   │   └── IWsProvider.ts
-│   ├── IApiError.ts
-│   ├── IauthResponse.ts
+│   ├── IauthResponse.ts     # avatarMessage?: string
 │   └── IUserResponse.ts
 │
-├── utils/                   # Utilitaires
-│   ├── canvasUtils.tsx     # Logique cropping image
-│   ├── fade-scale.ts       # Transitions
-│   └── constants/
-│       └── extensions.ts   # Mapping MIME types
-│
-├── App.tsx                 # Composant racine avec Router
-├── App.css                 # Styles App
-├── index.css               # Styles globaux (thème rétro)
-├── main.tsx                # Point d'entrée
-└── vite-env.d.ts          # Types Vite
+└── utils/
+    ├── canvasUtils.tsx      # Logique cropping image
+    └── constants/
+        └── extensions.ts    # Mapping MIME types
 ```
 
 ---
@@ -114,25 +106,17 @@ src/
 ### Prérequis
 
 - Node.js 18+
-- npm ou yarn
 - Backend OldSchoolGames en cours d'exécution sur `http://localhost:3000`
 
 ### Installation
 
 ```bash
-# Cloner le repository
-git clone <repository>
 cd OldSchoolGames/V2/frontend
-
-# Installer les dépendances
 npm install
-
-# Configurer les variables d'environnement
 cp .env.example .env
-# Éditer .env avec VITE_BACKEND_URL=http://localhost:3000
 ```
 
-### Variables d'environnement requises
+### Variables d'environnement
 
 ```env
 VITE_BACKEND_URL=http://localhost:3000
@@ -141,298 +125,89 @@ VITE_BACKEND_URL=http://localhost:3000
 ### Démarrage
 
 ```bash
-# Mode développement (avec hot reload)
-npm run dev
-
-# Preview du build production
-npm run preview
-
-# Build pour production
-npm run build
+npm run dev        # Développement (hot reload)
+npm run build      # Build production
+npm run preview    # Preview du build
 ```
 
-### 🎨 Code Quality
+### Code Quality
 
 ```bash
-# Vérifier le linting
 npm run lint
-
-# Corriger automatiquement les erreurs
 npm run lint:fix
 ```
 
 ---
 
-## 📱 Routes & Pages
+## 📱 Routes
 
-| Route | Description | Authentification |
-|-------|-------------|------------------|
-| `/login` | Page de connexion/inscription | ❌ |
-| `/` | Dashboard - Liste des joueurs | ✅ JWT |
-| `/profile` | Profil utilisateur | ✅ JWT |
-| `/morpion` | Partie Morpion (Tic-Tac-Toe) | ✅ JWT |
-
----
-
-## 🔌 Intégration WebSocket
-
-### Configuration Socket.IO
-
-La connexion WebSocket est automatiquement gérée par `WsProvider.tsx`:
-
-```typescript
-// Déjà configuré dans WsProvider
-const socket = io(`${BACKEND_URL}/events`, {
-  auth: {
-    token: localStorage.getItem('accessToken')
-  }
-});
-```
-
-### Utilisation dans les composants
-
-```typescript
-import { useWsSocket } from '@/hooks/useWsSocket';
-
-export function MyComponent() {
-  const { socket } = useWsSocket();
-
-  // Écouter les événements
-  socket?.on('userList', (users) => {
-    console.log('Utilisateurs connectés:', users);
-  });
-
-  // Émettre un événement
-  socket?.emit('invitation', { toUserId: 5, game: 'morpion' });
-}
-```
-
-### Événements WebSocket disponibles
-
-- **userList** - Liste des utilisateurs connectés
-- **invitation** - Gestion des invitations (create, accept, cancel)
-- **game** - Événements du jeu (play, reload, leave)
+| Route | Description | Auth |
+|-------|-------------|------|
+| `/login` | Connexion / Inscription | ❌ |
+| `/` | Layout Header (parent) | ✅ |
+| `/dashboard` | Liste joueurs, invitations | ✅ |
+| `/profile` | Profil utilisateur | ✅ |
+| `/morpion` | Jeu Morpion | ✅ |
+| `/puissance4` | Jeu Puissance4 | ✅ |
+| `/reversi` | Jeu Reversi | ✅ |
 
 ---
 
-## 🎮 Interface Morpion
+## 🎮 GameBoard générique
 
-### Fonctionnalités
+`src/pages/Game/GameBoard.tsx` est agnostique du jeu — il reçoit :
+- `cols`, `rows` : dimensions de la grille
+- `cellsContent` : contenu de chaque cellule
+- `handleCellClick` : callback au clic
 
-- **Grille interactive 3x3** - Clic pour jouer
-- **Affichage du tour** - Indique qui doit jouer (X ou O)
-- **Détection de victoire** - Annonce automatique du gagnant
-- **Gestion des égalités** - Détection et affichage
-- **Rechargement** - Les deux joueurs doivent confirmer
-
-**Fichiers relatifs:**
-- `src/pages/Game/Morpion/Morpion.tsx` - Logique du jeu
-- `src/pages/Game/GameBoard.tsx` - Composant grille réutilisable
+Chaque page jeu passe ses propres props et gère sa logique WebSocket :
+- `socket.on('game', handler)` au montage
+- `socket.off('game', handler)` au unmount
 
 ---
 
-## 🔐 Authentification
-
-### Flow d'authentification
-
-1. **Inscription** - Création de compte avec avatar optionnel
-2. **Login** - Connexion avec email/mot de passe
-3. **Token Storage** - JWT stocké en localStorage sous `accessToken`
-4. **API Calls** - Toutes les requêtes API envoient le token
-5. **WebSocket Connection** - Token passé lors de la connexion à `/events`
-
-### Gestion du token
+## 🔌 WebSocket
 
 ```typescript
-// Token automatiquement récupéré depuis localStorage
-const token = localStorage.getItem('accessToken');
+// Émettre
+socket.emit('game', { eventType: 'play', roomName, cellName });
 
-// Utilisé dans les headers API
-headers: {
-  'Authorization': `Bearer ${token}`,
-  'Content-Type': 'application/json'
-}
-
-// Et dans la connexion WebSocket
-const socket = io(BACKEND_URL, {
-  auth: { token }
-});
+// Écouter
+socket.on('game', (result: IGameEventData) => { ... });
 ```
 
----
-
-## 📊 État global (Context API)
-
-### AppContext
-
-```typescript
-{
-  accessToken: string | null;
-  user: User | null;
-}
-```
-
-Fournit:
-- Accès au token JWT
-- Information utilisateur courant
-- Persistance en localStorage
-
-**Provider:** `AppProvider.tsx`
-- Initialise depuis localStorage au montage
-- Récupère l'utilisateur courant automatiquement
-
-### WsContext
-
-```typescript
-{
-  socket: Socket | null;
-  ioClose: () => void;
-}
-```
-
-Fournit:
-- Accès à la connexion Socket.IO
-- Fonction pour fermer la connexion
-
-**Provider:** `WsProvider.tsx`
-- Crée la connexion Socket.IO avec auth token
-- Accessible uniquement dans les routes protégées
+`IGameEventData` : `{ eventType, turn, winner?, cells?, flippedCells?, pass?, error? }`
 
 ---
 
 ## 🎨 Thème & Styling
 
-### Approche Styling
-
-Le projet utilise une **approche mixte CSS/SCSS**:
-
-1. **CSS scoped** - Co-localisé avec les composants
-   - Box.css, Button.css, Header.css, etc.
-
-2. **SCSS** - Pour les pages plus complexes
-   - GameBoard.scss, Morpion.scss, UserItem.scss
-
-3. **CSS Global** (index.css)
-   - Thème rétro/arcade
-   - Police customisée: "Sixtyfour" (Google Fonts)
-   - Palette de couleurs années 80/90
-
-### Palette de couleurs (Thème Rétro)
-
-```css
-/* Fond */
-Background: #131410 (noir très foncé)
-
-/* Texte principal */
-Color: #4a8b53 (vert foncé)
-
-/* Accents */
-Accent lime: #88ff88 (vert clair/lime)
-
-/* Input styling */
-CRT-style 3D borders
-Arcade feel avec fonts rétro
-```
-
-### Composants UI
-
-Tous les composants UI sont localisés dans `/src/components`:
-- Réutilisables et flexibles
-- Styling co-localisé
-- Support du thème rétro cohérent
-
----
-
-## 🖼️ Gestion des avatars
-
-### Upload et Cropping
-
-```typescript
-// Utilise react-easy-crop
-import { CropperModal } from '@/components';
-
-// Workflow:
-// 1. User sélectionne une image
-// 2. CropperModal s'ouvre
-// 3. User crope l'image interactivement
-// 4. Image convertie en Data URI via canvas
-// 5. Envoyée au backend en FormData
-```
-
-**Fichiers:**
-- `src/components/CropperModal/CropperModal.tsx` - Composant modal
-- `src/utils/canvasUtils.tsx` - Logique de cropping et conversion
+- Fond : `#131410` — Texte : `#4a8b53` — Accent : `#88ff88`
+- Police : `Sixtyfour` (Google Fonts)
+- `height: 100dvh` sur `html` et `body` uniquement (pas sur les enfants — scroll parasite iOS)
+- CSS pur pour composants simples, SCSS pour jeux et composants complexes
+- MUI v7 uniquement pour les menus dropdown (styles via `sx` prop)
 
 ---
 
 ## 🐳 Docker
 
-### Build l'image Docker
-
 ```bash
 docker build -t oldschoolgames-frontend:latest .
-```
-
-### Lancer le conteneur
-
-```bash
-docker run -p 80:80 \
-  -e VITE_BACKEND_URL=http://backend:3000 \
-  oldschoolgames-frontend:latest
+docker run -p 80:80 -e VITE_BACKEND_URL=http://backend:3000 oldschoolgames-frontend:latest
 ```
 
 ---
 
-## 🚦 CI/CD Pipeline
+## 🚦 CI/CD
 
-Pipeline Jenkins automatisé pour:
+Pipeline Jenkins :
 - ✅ Installation des dépendances
-- ✅ Linting du code
-- ✅ Build de l'application
+- ✅ Linting
+- ✅ Build
 - ✅ Build & Push image Docker
 - ✅ Déploiement automatique
 
-**Déploiement multi-environnements:**
-- Feature branches → Preview deployment
-- Branche dev → Dev environment
-- Branche main → Production (latest tag)
-
 ---
 
-## 🤝 Contribution
-
-Pour contribuer au projet:
-
-1. Créer une feature branch: `git checkout -b feature/description`
-2. Commit vos changements: `git commit -m "type: description"`
-3. Push vers la branche: `git push origin feature/description`
-4. Ouvrir une Pull Request
-
----
-
-## 📄 License
-
-Proprietary - Codevert Organization
-
----
-
-## 📧 Support
-
-Pour des questions ou rapports de bug, consultez la section Issues du repository.
-
-**API Backend:** http://localhost:3000
-**Frontend:** http://localhost:5173 (Vite)
-**WebSocket:** ws://localhost:3000/events
-
----
-
-## 🔗 Ressources utiles
-
-- [React Documentation](https://react.dev)
-- [Vite Guide](https://vitejs.dev)
-- [React Router](https://reactrouter.com)
-- [Socket.IO Client](https://socket.io/docs/v4/client-api/)
-- [React Easy Crop](https://github.com/ValentinH/react-easy-crop)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-
-**Dernière mise à jour:** 2025-11-02
+**Dernière mise à jour:** 2026-03-15
