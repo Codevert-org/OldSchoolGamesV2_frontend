@@ -22,6 +22,34 @@ export async function fetchMe() {
   return await response.json();
 }
 
+export type StatsPeriod = 'week' | 'month' | 'year';
+
+export interface IGameStats {
+  total: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  ratio: number;
+}
+
+export interface IStats {
+  global: IGameStats;
+  byGame: Record<string, IGameStats>;
+}
+
+export async function fetchStats(period: StatsPeriod): Promise<IStats> {
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/users/me/stats?period=${period}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    }
+  );
+  await checkResponse(response);
+  return response.json();
+}
+
 export async function fetchUpdateUser(formData: FormData) {
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/me`, {
     method: 'PUT',
