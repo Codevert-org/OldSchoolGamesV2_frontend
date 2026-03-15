@@ -16,9 +16,9 @@ export function Home() {
   }, [ioClose]);
   
   return (
-    <>
+    <div className="home-layout">
       <Header ioClose={ioClose}/>
       <Outlet />
-    </>
+    </div>
   )
 }

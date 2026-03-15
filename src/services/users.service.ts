@@ -46,8 +46,7 @@ export async function fetchStats(period: StatsPeriod): Promise<IStats> {
       },
     }
   );
-  await checkResponse(response);
-  return response.json();
+  return checkResponse(response);
 }
 
 export async function fetchUpdateUser(formData: FormData) {

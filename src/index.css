@@ -4,12 +4,20 @@ html, #root {
 	height: 100dvh;
 }
 
+.home-layout {
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+	overflow: hidden;
+}
+
 body {
 	margin: 0;
 	padding: 0;
 	background-color: #131410;
 	color: #4a8b53;
 	height: 100dvh;
+	overflow: hidden;
 }
 
 body,
