@@ -70,7 +70,7 @@ src/
 │   └── WsProvider.tsx       # Initialise Socket.IO avec token
 │
 ├── pages/
-│   ├── Dashboard/           # Liste joueurs, invitations, NotificationFeed
+│   ├── Dashboard/           # Liste joueurs, invitations, NotificationFeed, stats de parties (onglets Global/Morpion/Puissance4/Reversi, filtre semaine/mois/année)
 │   ├── Game/
 │   │   ├── GameBoard.tsx    # Grille générique (cols, rows, cellsContent, handleCellClick)
 │   │   ├── Morpion/
@@ -210,4 +210,4 @@ Pipeline Jenkins :
 
 ---
 
-**Dernière mise à jour:** 2026-03-15
+**Dernière mise à jour:** 2026-03-21
