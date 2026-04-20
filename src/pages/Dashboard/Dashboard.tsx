@@ -62,11 +62,12 @@ export function Dashboard() {
       }
       if(data.eventType === 'disconnected') {
         const userId = data.user as number;
+        let pseudoToNotify: string | undefined;
         setUserList((prev) => {
-          const disconnectedUser = prev.find(u => u.id === userId);
-          if(disconnectedUser) pushNotification(`${disconnectedUser.pseudo} vient de se déconnecter`);
+          pseudoToNotify = prev.find(u => u.id === userId)?.pseudo;
           return prev.filter(u => u.id !== userId);
         });
+        if(pseudoToNotify) pushNotification(`${pseudoToNotify} vient de se déconnecter`);
       }
       if(data.eventType === 'registered') {
         const userData = data.user as IUser;
