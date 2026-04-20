@@ -6,7 +6,7 @@
 }
 
 .expandable {
-  display: grid;;
+  display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
 	transition: all .2s ease-out;
