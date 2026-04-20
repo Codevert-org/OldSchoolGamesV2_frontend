@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "ci_lint": "eslint . -f checkstyle -o eslint.xml",
+    "ci_lint": "eslint . -f eslint-formatter-checkstyle -o eslint.xml",
     "preview": "vite preview",
     "test": "vitest",
     "test:cov": "vitest run --coverage"

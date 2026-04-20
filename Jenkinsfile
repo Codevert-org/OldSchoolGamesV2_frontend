@@ -54,7 +54,7 @@ pipeline {
       }
       post {
         always {
-          junit 'test-results/test-results.xml'
+          junit allowEmptyResults: true, testResults: 'test-results/test-results.xml'
           recordIssues aggregatingResults: true,
                        enabledForFailure: true,
                        failOnError: true,
