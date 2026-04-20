@@ -43,7 +43,7 @@ pipeline {
     stage('lint') {
       steps {
         sh '''
-          npm run lint
+          npm run ci_lint
         '''
       }
     }
@@ -51,6 +51,18 @@ pipeline {
     stage('test') {
       steps {
         sh 'npm run test:cov'
+      }
+      post {
+        always {
+          junit allowEmptyResults: true, testResults: 'test-results/test-results.xml'
+          recordIssues aggregatingResults: true,
+                       enabledForFailure: true,
+                       failOnError: true,
+                       ignoreQualityGate: false,
+                       skipPublishingChecks: true,
+                       sourceDirectories: [[path: 'src']],
+                       tools: [checkStyle(pattern: 'eslint.xml')]
+        }
       }
     }
 
