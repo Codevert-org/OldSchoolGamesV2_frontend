@@ -25,3 +25,8 @@ dist-ssr
 
 # misc
 .env
+
+# Test outputs
+coverage/
+test-results/
+eslint.xml
