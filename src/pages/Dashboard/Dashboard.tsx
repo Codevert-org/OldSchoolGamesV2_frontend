@@ -20,8 +20,6 @@ export function Dashboard() {
   const [stats, setStats] = useState<IStats | null>(null);
   const [period, setPeriod] = useState<StatsPeriod>('week');
   const notifIdRef = useRef(0);
-  const userListRef = useRef(userList);
-  userListRef.current = userList;
 
   useEffect(() => {
     fetchStats(period).then(setStats).catch(() => setStats(null));
@@ -64,9 +62,11 @@ export function Dashboard() {
       }
       if(data.eventType === 'disconnected') {
         const userId = data.user as number;
-        const disconnectedUser = userListRef.current.find(u => u.id === userId);
-        setUserList((prev) => prev.filter(u => u.id !== userId));
-        if(disconnectedUser) pushNotification(`${disconnectedUser.pseudo} vient de se déconnecter`);
+        setUserList((prev) => {
+          const disconnectedUser = prev.find(u => u.id === userId);
+          if(disconnectedUser) pushNotification(`${disconnectedUser.pseudo} vient de se déconnecter`);
+          return prev.filter(u => u.id !== userId);
+        });
       }
       if(data.eventType === 'registered') {
         const userData = data.user as IUser;
