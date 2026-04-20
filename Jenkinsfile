@@ -48,6 +48,36 @@ pipeline {
       }
     }
 
+    stage('test') {
+      steps {
+        sh 'npm run test:cov'
+      }
+    }
+
+    stage('SonarQube analysis') {
+      steps {
+        script {
+          scannerHome = tool 'SonarQubeScanner'
+        }
+        withSonarQubeEnv('OsgFrontSonarQube') {
+          sh "${scannerHome}/bin/sonar-scanner"
+        }
+      }
+    }
+
+    stage('Sonar Quality Gate') {
+      steps {
+        timeout(time: 1, unit: 'HOURS') {
+          script {
+            def qg = waitForQualityGate()
+            if (qg.status == 'ERROR') {
+              unstable('Quality gate failed')
+            }
+          }
+        }
+      }
+    }
+
     stage('build & push docker image') {
       when {
         expression { env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'dev'}
