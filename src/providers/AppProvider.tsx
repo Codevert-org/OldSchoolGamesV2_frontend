@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { type Appstate } from "../contexts/appContext";
 import { AppContext } from "../contexts";
 
@@ -9,7 +9,7 @@ type AppProps = {
 function AppProvider({children} : AppProps) {
   
   const [appState, setAppState] = useState<Appstate>({accessToken: '', user: null});
-  const value = {appState, setAppState};
+  const value = useMemo(() => ({ appState, setAppState }), [appState]);
 
   useEffect(() => {
     async function fetchUser() {
@@ -35,7 +35,6 @@ function AppProvider({children} : AppProps) {
     <AppContext.Provider value={value}>
       {children}
     </AppContext.Provider>
-    // <p>{appState.user?.pseudo}</p>
   )
 }
 
