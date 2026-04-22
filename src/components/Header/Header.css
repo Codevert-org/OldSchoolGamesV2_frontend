@@ -31,6 +31,10 @@ header h1 {
 		margin-left: 10px;
 		cursor: pointer;
 	}
+	& .logbar {
+		display: flex;
+		align-items: center;
+	}
 	& .logLabel {
 		display: flex;
 		align-items: center;

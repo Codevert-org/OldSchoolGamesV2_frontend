@@ -47,15 +47,17 @@ export function Header({ ioClose }: { ioClose?: () => void }) {
       <h1><Link to='/'>OldSchoolGames</Link></h1>
       {appContext.appState.user &&
         <div className='logthumb' ref={menu}>
-          <button type="button" className="logLabel" onClick={toggleMenu}>
-            {appContext.appState.user.avatarUrl &&
-              <img className="logAvatar" alt="" src={`${import.meta.env.VITE_BACKEND_URL}/assets/user_avatars/${appContext.appState.user.avatarUrl}`} />
-            }
-            <span>{appContext.appState.user.pseudo}</span>
-          </button>
-          <button type="button" className="logout-btn" onClick={logOut}>
-            <img src="/turn-off.png" alt="logout" />
-          </button>
+          <div className="logbar">
+            <button type="button" className="logLabel" onClick={toggleMenu}>
+              {appContext.appState.user.avatarUrl &&
+                <img className="logAvatar" alt="" src={`${import.meta.env.VITE_BACKEND_URL}/assets/user_avatars/${appContext.appState.user.avatarUrl}`} />
+              }
+              <span>{appContext.appState.user.pseudo}</span>
+            </button>
+            <button type="button" className="logout-btn" onClick={logOut}>
+              <img src="/turn-off.png" alt="logout" />
+            </button>
+          </div>
           <Box className="logMenu">
             <div className="menuItem">
               <Link to='/profile' onClick={collapseMenu}>
