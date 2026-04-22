@@ -8,7 +8,7 @@ const noop = vi.fn();
 describe('GameBoard', () => {
   it('renders cols × rows cells', () => {
     render(<GameBoard cols="3" rows="3" width="300" handleCellClick={noop} />);
-    expect(screen.getAllByRole('generic', { hidden: true }).filter(el => el.classList.contains('cells'))).toHaveLength(9);
+    expect(screen.getAllByRole('button').filter(el => el.classList.contains('cells'))).toHaveLength(9);
   });
 
   it('generates cell IDs with pattern c${col}${row}', () => {
