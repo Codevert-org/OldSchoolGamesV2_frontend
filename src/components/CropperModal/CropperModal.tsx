@@ -102,7 +102,7 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
         {
           image &&
           <>
-            <h2>svelte-easy-crop</h2>
+            <h2>Image cropper</h2>
             <div style={{position: 'relative', width: '100%', height: '300px'}}>
               <Cropper
                 image={image}
