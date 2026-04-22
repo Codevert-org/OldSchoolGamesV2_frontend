@@ -55,7 +55,7 @@ export function Reversi() {
   // Référence aux couleurs actuelles des cellules pour l'animation flip
   const cellColorsRef = useRef<Record<string, string>>({});
 
-  const handleCellClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleCellClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     if (!boardEnabledRef.current) return;
     if (socket && roomName) {
       socket.emit('game', { eventType: 'play', roomName, cellName: event.currentTarget.id });

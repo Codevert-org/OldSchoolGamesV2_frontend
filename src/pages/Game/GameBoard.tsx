@@ -4,7 +4,7 @@ interface GameBoardProps {
   cols: string;
   rows: string;
   width: string;
-  handleCellClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  handleCellClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   cellsContent?: Record<string, React.ReactNode>;
 }
 
@@ -16,11 +16,12 @@ export function GameBoard(props: GameBoardProps) {
     }
   }
 
-  // Set the grid-template-column value
   let gridColumns = '';
   for(let i=1; i<= Number(props.cols); i++) {
     gridColumns += ' 1fr';
   }
+
+  const cellSize = Number(props.width) / Number(props.cols);
 
   return (
     <div className="GameBoard">
@@ -29,26 +30,35 @@ export function GameBoard(props: GameBoardProps) {
         style={{
           display: 'grid',
           width: `${props.width}px`,
-          height: `${Number(props.width) / Number(props.cols) * Number(props.rows)}px`,
+          height: `${cellSize * Number(props.rows)}px`,
           gridTemplateColumns: gridColumns,
         }}
       >
         {cells.map((cell) => (
-          <div
+          <button
             id={cell}
             className="cells"
             key={`${cell}-cell`}
             style={{
+              borderTop: 'none',
+              borderLeft: 'none',
               borderBottom: Number(cell.substring(2)) === Number(props.rows) ? 'none' : '1px solid green',
               borderRight: Number(cell.substring(1,2)) === Number(props.cols) ? 'none' : '1px solid green',
-              height: `${Number(props.width) / Number(props.cols)}px`,
+              borderImage: 'none',
+              borderRadius: 0,
+              width: `${cellSize}px`,
+              height: `${cellSize}px`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: (Number(props.width)/Number(props.cols)) * 0.2,
+              fontSize: cellSize * 0.2,
+              background: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              color: 'inherit',
             }}
             onClick={props.handleCellClick}
-          >{props.cellsContent?.[cell]}</div>
+          >{props.cellsContent?.[cell]}</button>
         ))}
       </div>
     </div>
