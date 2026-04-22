@@ -89,7 +89,7 @@ header h1 {
 	grid-template-rows: 0fr;
 	transition: grid-template-rows .2s ease-out;
   overflow: hidden;
-	& span, & button {
+	& span, & button, & a {
 		min-height: 0;
 	}
 }
