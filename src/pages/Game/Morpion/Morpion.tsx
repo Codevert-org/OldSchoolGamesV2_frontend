@@ -20,13 +20,15 @@ export function Morpion() {
   const [cells, setCells] = useState<Record<string, string>>({});
   const [turn, setTurn] = useState<string>('');
   const boardEnabledRef = useRef(true);
+  const socketRef = useRef(socket);
+  useEffect(() => { socketRef.current = socket; }, [socket]);
 
-  const handleCellClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleCellClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     if(!boardEnabledRef.current) return;
-    if(socket && roomName) {
-      socket.emit('game', {eventType: 'play', roomName, cellName: event.currentTarget.id})
+    if(socketRef.current && roomName) {
+      socketRef.current.emit('game', {eventType: 'play', roomName, cellName: event.currentTarget.id})
     }
-  }, [socket, roomName]);
+  }, [roomName]);
 
   const requestReload = () => {
     socket?.emit('game', {eventType: 'reload', roomName});
@@ -67,7 +69,6 @@ export function Morpion() {
 
   useEffect(() => {
     if(!roomName) {
-      console.log('no room name, redirecting to dashboard');
       navigate('/');
       return;
     }
@@ -85,10 +86,7 @@ export function Morpion() {
         }
         if(data.eventType === 'play') handlePlay(data);
         if(data.eventType === 'reload') handleReload(data);
-        if(data.eventType === 'leave') {
-          console.log('game left');
-          navigate('/');
-        }
+        if(data.eventType === 'leave') navigate('/');
       });
     }
     return () => {

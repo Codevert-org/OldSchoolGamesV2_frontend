@@ -47,7 +47,7 @@ export function Puissance4() {
     animate();
   };
 
-  const handleCellClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleCellClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     if(!boardEnabledRef.current) return;
     if(socket && roomName) {
       // Puissance4 envoie la colonne, pas la cellule exacte (le serveur trouve la ligne)
