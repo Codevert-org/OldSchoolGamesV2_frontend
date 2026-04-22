@@ -16,7 +16,7 @@ export function UserItem({user}: {user: IUser}) {
   const [isGameSelectionOpen, setIsGameSelectionOpen] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const handleInviteClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleInviteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     if(!user.invite) {
       // TODO switch to chooseGame when implemented
@@ -69,7 +69,8 @@ export function UserItem({user}: {user: IUser}) {
 
   return (
     <>
-    <div
+    <button
+      type="button"
       className="userItem"
       onClick={handleInviteClick}
     >
@@ -91,7 +92,7 @@ export function UserItem({user}: {user: IUser}) {
         <div className="invite-received" >
           <img src="/coucou.gif" alt="invitation received"/>
         </div>}
-    </div>
+    </button>
     {/* Invite sent menu */}
     <Menu
       anchorEl={anchorEl}
