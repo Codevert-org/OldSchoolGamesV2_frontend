@@ -1,4 +1,4 @@
-header {
+﻿header {
 	height: 120px;
 	background-image: url('/dark2.png');
 	background-size: contain;
@@ -35,6 +35,11 @@ header h1 {
 		display: flex;
 		align-items: center;
 		cursor: pointer;
+		border: none;
+		background: none;
+		padding: 0;
+		font: inherit;
+		color: inherit;
 		& .logAvatar {
 			height: 30px;
 			width: 30px;
@@ -45,13 +50,20 @@ header h1 {
 			margin-right: 6px;
 		}
 	}
+	& .logout-btn {
+		border: none;
+		background: none;
+		padding: 0;
+		line-height: 0;
+		cursor: pointer;
+	}
 	& .box {
 		margin-top: 4px;
 		background-color: #131410;
 	}
 }
 .logthumb:not(.expanded) {
-	& .box, a {
+	& .box, a, & .box button {
 		cursor: unset;
 		pointer-events: none;
 	}
@@ -73,9 +85,20 @@ header h1 {
 	grid-template-rows: 0fr;
 	transition: grid-template-rows .2s ease-out;
   overflow: hidden;
-	& span {
+	& span, & button {
 		min-height: 0;
 	}
+}
+
+button.menuItem {
+	border: none;
+	background: none;
+	font: inherit;
+	color: inherit;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	padding: 0;
 }
 
 .logthumb.expanded .menuItem {
