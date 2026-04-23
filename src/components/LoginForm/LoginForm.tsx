@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback, useContext, type ChangeEvent } from 'react';
+import { useRef, useState, useContext, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Switch } from '../Switch/Switch';
 import { Box } from '../Box/Box';
@@ -6,19 +6,15 @@ import { Button } from '../Button/Button';
 import { AppContext } from '../../contexts';
 import { CropperModal } from '../CropperModal/CropperModal';
 import './loginForm.css';
+import '../../assets/icons/icons.css';
 import { fetchAuth } from '../../services/auth.service';
 import { checkPseudoAvailable } from '../../services/users.service';
 import type { IAuthResponse } from '../../interfaces/IauthResponse';
 import { FormLine } from '../FormLine/FormLine';
 import type { IApiError } from '../../interfaces/IApiError';
-
-const PASSWORD_RULES = [
-  { label: 'Au moins 1 chiffre', test: (v: string) => /\d/.test(v) },
-  { label: 'Au moins 1 majuscule', test: (v: string) => /[A-Z]/.test(v) },
-  { label: 'Au moins 1 minuscule', test: (v: string) => /[a-z]/.test(v) },
-  { label: 'Au moins 1 caractère spécial', test: (v: string) => /[^a-zA-Z0-9\s]/.test(v) },
-  { label: '8 à 16 caractères, sans espace', test: (v: string) => /^[^\s]{8,16}$/.test(v) },
-];
+import { validatePassword, createPseudoChecker } from '../../utils/validation';
+import ValidIcon from '../../assets/icons/ValidIcon';
+import InvalidIcon from '../../assets/icons/InvalidIcon';
 
 const extension: { [index: string]: string } = {
   'image/gif': 'gif',
@@ -26,55 +22,129 @@ const extension: { [index: string]: string } = {
   'image/jpeg': 'jpg',
 };
 
+const PASSWORD_CRITERIA = [
+  { key: 'length',    label: '8–16 characters' },
+  { key: 'uppercase', label: 'Uppercase' },
+  { key: 'lowercase', label: 'Lowercase' },
+  { key: 'digit',     label: 'Number' },
+  { key: 'special',   label: 'Special character' },
+] as const;
+
+type ErrorState = { text: string; phase: 'visible' | 'exiting' } | null;
+
+function useFieldError() {
+  const [error, setError] = useState<ErrorState>(null);
+
+  const show = (text: string) => setError({ text, phase: 'visible' });
+
+  const dismiss = () => {
+    setError((prev) => prev ? { ...prev, phase: 'exiting' } : null);
+  };
+
+  const clear = () => setError(null);
+
+  return { error, show, dismiss, clear };
+}
+
 export function LoginForm() {
   const appContext = useContext(AppContext);
   const navigate = useNavigate();
   const [firstIsActive, setfirstIsActive] = useState(true);
   const [croppedImage, setCroppedImage] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const formRef = useRef(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [avatarWarning, setAvatarWarning] = useState<string>('');
 
-  // Champs contrôlés — register uniquement
+  // Register fields
   const [pseudo, setPseudo] = useState('');
   const [pseudoStatus, setPseudoStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [emailValid, setEmailValid] = useState<boolean | null>(null);
+  const [passwordConfirmValid, setPasswordConfirmValid] = useState<boolean | null>(null);
 
-  const switchIndex = () => {
-    setfirstIsActive(!firstIsActive);
-  };
+  const pseudoError = useFieldError();
+  const emailError = useFieldError();
+  const passwordConfirmError = useFieldError();
 
-  // Debounce check-pseudo : 1s après le dernier changement
-  const handlePseudoChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const pseudoChecker = useRef(createPseudoChecker(checkPseudoAvailable));
+
+  const switchIndex = () => setfirstIsActive(!firstIsActive);
+
+  // --- Pseudo ---
+  const handlePseudoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPseudo(value);
     setPseudoStatus('idle');
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (value.length < 2) return;
+    if (pseudoError.error?.phase === 'visible') pseudoError.dismiss();
+    if (value.length < 1) return;
     setPseudoStatus('checking');
-    debounceRef.current = setTimeout(async () => {
-      const available = await checkPseudoAvailable(value);
-      setPseudoStatus(available ? 'available' : 'taken');
-    }, 1000);
-  }, []);
+    pseudoChecker.current(value, (available) => {
+      if (available) {
+        setPseudoStatus('available');
+        pseudoError.dismiss();
+      } else {
+        setPseudoStatus('taken');
+        pseudoError.show('_ Pseudo already taken');
+      }
+    });
+  };
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
+  // --- Email ---
+  const handleEmailBlur = (e: { target: HTMLInputElement }) => {
+    const value = e.target.value;
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setEmailValid(valid);
+    if (!valid) {
+      emailError.show('_ Invalid email format');
+    } else {
+      emailError.dismiss();
+    }
+  };
 
-  const passwordRulesValid = PASSWORD_RULES.every((r) => r.test(password));
-  const passwordConfirmValid = password === passwordConfirm && passwordConfirm.length > 0;
+
+  // --- Password ---
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+  };
+
+  // --- PasswordConfirm ---
+  const handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPasswordConfirm(value);
+    if (passwordConfirmValid === false) {
+      setPasswordConfirmValid(null);
+      passwordConfirmError.dismiss();
+    }
+  };
+
+  const handlePasswordConfirmBlur = () => {
+    const valid = password === passwordConfirm && passwordConfirm.length > 0;
+    setPasswordConfirmValid(valid);
+    if (!valid) {
+      passwordConfirmError.show('_ Passwords do not match');
+    } else {
+      passwordConfirmError.dismiss();
+    }
+  };
+
+  // --- Form validity ---
+  const pwResult = validatePassword(password);
+  const pwValid = Object.values(pwResult).every(Boolean);
   const registerFormValid =
-    pseudo.length >= 2 &&
+    pseudo.length >= 1 &&
     pseudoStatus === 'available' &&
-    passwordRulesValid &&
-    passwordConfirmValid;
+    pwValid &&
+    password === passwordConfirm &&
+    passwordConfirm.length > 0 &&
+    emailValid === true;
 
+  // --- Avatar ---
   async function setAvatar(formData: FormData) {
     const blob = await fetch(croppedImage).then((r) => r.blob());
     const mimeType = croppedImage.substring(
@@ -87,6 +157,7 @@ export function LoginForm() {
     formData.set('avatar', file);
   }
 
+  // --- Submit ---
   async function handleFetch(endpoint: 'login' | 'register', body: string | FormData) {
     setErrorMessage('');
     setAvatarWarning('');
@@ -101,24 +172,18 @@ export function LoginForm() {
       }
       navigate('/');
     } catch (e) {
-      console.log(e);
       const error = e as IApiError;
       setErrorMessage(error.message);
     }
   }
 
   const handleLogin = async (formData: FormData) => {
-    const json = {
-      email: formData.get('email'),
-      password: formData.get('password'),
-    };
+    const json = { email: formData.get('email'), password: formData.get('password') };
     await handleFetch('login', JSON.stringify(json));
   };
 
   const handleRegister = async (formData: FormData) => {
-    if (croppedImage) {
-      await setAvatar(formData);
-    }
+    if (croppedImage) await setAvatar(formData);
     await handleFetch('register', formData);
   };
 
@@ -137,62 +202,112 @@ export function LoginForm() {
           firstIsActive={firstIsActive}
         />
         <Box className={`loginForm${firstIsActive ? '' : ' expanded'}`}>
-          <form ref={formRef} action={firstIsActive ? handleLogin : handleRegister}>
-            {/* Pseudo — register uniquement */}
+          <form noValidate action={firstIsActive ? handleLogin : handleRegister}>
+
+            {/* Pseudo — register only */}
             <div className="expandable">
               <div>
-                <FormLine
-                  name="pseudo"
-                  required={!firstIsActive}
-                  value={pseudo}
-                  onChange={handlePseudoChange}
-                />
-                {pseudo.length >= 2 && (
-                  <div className={`pseudo-status pseudo-status--${pseudoStatus}`}>
-                    {pseudoStatus === 'checking' && 'Vérification…'}
-                    {pseudoStatus === 'available' && '✓ Disponible'}
-                    {pseudoStatus === 'taken' && '✗ Déjà utilisé'}
+                <div className={`field-wrapper${pseudoStatus === 'taken' ? ' field-error' : pseudoStatus === 'available' ? ' field-valid' : ''}`}>
+                  <FormLine
+                    name="pseudo"
+                    required={!firstIsActive}
+                    value={pseudo}
+                    onChange={handlePseudoChange}
+                  />
+                  {pseudoStatus === 'available' && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+                  {pseudoStatus === 'taken' && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
+                </div>
+                {pseudoError.error && (
+                  <div
+                    className={`error-message${pseudoError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
+                    onAnimationEnd={() => { if (pseudoError.error?.phase === 'exiting') pseudoError.clear(); }}
+                  >
+                    {pseudoError.error.text}
                   </div>
                 )}
               </div>
             </div>
-            <FormLine name="email" inputType="email" required />
-            {/* Password — contrôlé en register, libre en login */}
-            <FormLine
-              name="password"
-              inputType="password"
-              label="Mot de passe:"
-              required
-              value={firstIsActive ? undefined : password}
-              onChange={firstIsActive ? undefined : (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-            />
+
+            {/* Email */}
+            <div className={`field-wrapper${emailValid === false ? ' field-error' : emailValid === true ? ' field-valid' : ''}`}>
+              <FormLine
+                name="email"
+                inputType="email"
+                required
+                onBlur={handleEmailBlur}
+              />
+              {emailValid === true && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+              {emailValid === false && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
+            </div>
+            {emailError.error && (
+              <div
+                className={`error-message${emailError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
+                onAnimationEnd={() => { if (emailError.error?.phase === 'exiting') emailError.clear(); }}
+              >
+                {emailError.error.text}
+              </div>
+            )}
+
+            {/* Password */}
+            <div className={`field-wrapper${passwordTouched && !pwValid ? ' field-error' : pwValid && password.length > 0 ? ' field-valid' : ''}`}>
+              <FormLine
+                name="password"
+                inputType="password"
+                label="Password:"
+                required
+                value={firstIsActive ? undefined : password}
+                onChange={firstIsActive ? undefined : handlePasswordChange}
+                onBlur={firstIsActive ? undefined : handlePasswordBlur}
+              />
+              {!firstIsActive && pwValid && password.length > 0 && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+            </div>
+
+            {/* Password criteria checklist — register only */}
             {!firstIsActive && password.length > 0 && (
-              <ul className="password-rules">
-                {PASSWORD_RULES.map((rule) => (
-                  <li key={rule.label} className={rule.test(password) ? 'rule-ok' : 'rule-ko'}>
-                    {rule.label}
+              <ul className="password-criteria">
+                {PASSWORD_CRITERIA.map(({ key, label }) => (
+                  <li
+                    key={key}
+                    className={
+                      pwResult[key] ? 'criterion-ok'
+                      : passwordTouched ? 'criterion-ko'
+                      : 'criterion-neutral'
+                    }
+                  >
+                    {pwResult[key] ? '[x]' : '[ ]'} {label}
                   </li>
                 ))}
               </ul>
             )}
-            {/* PasswordConfirm — register uniquement */}
+
+            {/* PasswordConfirm — register only */}
             <div className="expandable">
               <div>
-                <FormLine
-                  name="passwordConfirm"
-                  inputType="password"
-                  label="Confirmez:"
-                  required={!firstIsActive}
-                  value={passwordConfirm}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordConfirm(e.target.value)}
-                />
-                {passwordConfirm.length > 0 && (
-                  <div className={`pseudo-status pseudo-status--${passwordConfirmValid ? 'available' : 'taken'}`}>
-                    {passwordConfirmValid ? '✓ Les mots de passe correspondent' : '✗ Les mots de passe ne correspondent pas'}
+                <div className={`field-wrapper${passwordConfirmValid === false ? ' field-error' : passwordConfirmValid === true ? ' field-valid' : ''}`}>
+                  <FormLine
+                    name="passwordConfirm"
+                    inputType="password"
+                    label="Confirm:"
+                    required={!firstIsActive}
+                    value={passwordConfirm}
+                    onChange={handlePasswordConfirmChange}
+                    onBlur={handlePasswordConfirmBlur}
+                  />
+                  {passwordConfirmValid === true && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+                  {passwordConfirmValid === false && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
+                </div>
+                {passwordConfirmError.error && (
+                  <div
+                    className={`error-message${passwordConfirmError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
+                    onAnimationEnd={() => { if (passwordConfirmError.error?.phase === 'exiting') passwordConfirmError.clear(); }}
+                  >
+                    {passwordConfirmError.error.text}
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Avatar — register only */}
             <div className="expandable">
               <div>
                 <Button callback={() => setIsOpen(true)} label="avatar" />
@@ -203,18 +318,19 @@ export function LoginForm() {
                 )}
               </div>
             </div>
+
             <Button
               type="submit"
-              label="Valider"
+              label="Submit"
               disabled={!firstIsActive && !registerFormValid}
             />
           </form>
         </Box>
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {errorMessage && <div className="server-error">{errorMessage}</div>}
         {avatarWarning && (
           <div className="avatar-warning">
             <p>{avatarWarning}</p>
-            <Button type="button" label="Continuer" callback={() => navigate('/')} />
+            <Button type="button" label="Continue" callback={() => navigate('/')} />
           </div>
         )}
       </div>

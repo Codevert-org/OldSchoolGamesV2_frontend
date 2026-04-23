@@ -35,6 +35,47 @@ form {
   }
 }
 
+/* Field state wrappers */
+.field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-wrapper.field-error input {
+  border-color: var(--red-border);
+}
+
+.field-wrapper.field-valid input {
+  border-color: #88ff88;
+}
+
+.field-icon {
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.field-icon--valid {
+  color: #88ff88;
+}
+
+.field-icon--invalid {
+  color: var(--red-error);
+}
+
+/* Password criteria checklist */
+.password-criteria {
+  list-style: none;
+  margin: 2px 0 6px 0;
+  padding: 0 0 0 8px;
+  font-size: 0.85rem;
+}
+
+.password-criteria .criterion-ok      { color: #88ff88; }
+.password-criteria .criterion-ko      { color: var(--red-error); }
+.password-criteria .criterion-neutral { color: #4a8b53; }
+
+/* Avatar */
 .avatar-preview-container {
   width: 100px;
   height: 100px;
@@ -47,30 +88,11 @@ form {
   border-radius: 50%;
 }
 
-.error-message {
-  color: #d32f2f;
+/* Server-side error (post-submit) */
+.server-error {
+  color: var(--red-error);
   margin-top: 8px;
   font-size: 0.9rem;
-}
-
-.pseudo-status {
-  font-size: 0.85rem;
-  margin-top: 2px;
-  margin-bottom: 4px;
-  text-align: right;
-}
-.pseudo-status--available { color: #4caf50; }
-.pseudo-status--taken { color: #d32f2f; }
-.pseudo-status--checking { color: #888; }
-
-.password-rules {
-  list-style: none;
-  margin: 4px 0 8px 0;
-  padding: 0 0 0 8px;
-  font-size: 0.85rem;
-
-  & .rule-ok { color: #4caf50; }
-  & .rule-ko { color: #d32f2f; }
 }
 
 .avatar-warning {
