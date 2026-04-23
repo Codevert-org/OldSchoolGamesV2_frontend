@@ -1,0 +1,19 @@
+@keyframes typewriter {
+  from { max-width: 0; }
+  to   { max-width: 100%; }
+}
+
+@keyframes fadeDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(4px); }
+}
+
+.error-message {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 300ms steps(20, end) forwards;
+}
+
+.error-message--exit {
+  animation: fadeDown 200ms ease-out forwards;
+}
