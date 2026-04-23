@@ -6,12 +6,12 @@ import getCroppedImg from '../../utils/canvasUtils';
 import { Button } from '../Button/Button';
 import './CropperModal.css';
 
-type avatar = {
+type avatar = Readonly<{
   setImage: Dispatch<SetStateAction<string>>;
   croppedImage: string;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-}
+}>
 
 export function CropperModal({ setImage, croppedImage, showModal, setShowModal }: avatar) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0});

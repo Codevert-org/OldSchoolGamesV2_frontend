@@ -1,12 +1,12 @@
 import './Button.css'
 import type { MouseEvent, ReactNode } from 'react'
 
-interface Props {
+type Props = Readonly<{
   callback?: (e: MouseEvent<HTMLButtonElement>) => void,
   type?: 'button' | 'submit' | 'reset',
   label: string | ReactNode,
   disabled?: boolean,
-}
+}>
 
 export function Button(props : Props) {
 

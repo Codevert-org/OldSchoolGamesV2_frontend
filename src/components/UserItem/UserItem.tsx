@@ -1,5 +1,4 @@
-import { useContext, useState} from "react";
-import React from "react";
+import React, { useContext, useState} from "react";
 import type { IUser } from "../../interfaces/events/IUsers";
 import WsContext from "../../contexts/wsContext";
 import Menu from '@mui/material/Menu';
@@ -8,7 +7,9 @@ import MenuItem from '@mui/material/MenuItem';
 import "./UserItem.scss";
 import { Box } from "../Box/Box";
 
-export function UserItem({user}: {user: IUser}) {
+type UserItemProps = Readonly<{ user: IUser }>;
+
+export function UserItem({ user }: UserItemProps) {
   const wsContext = useContext(WsContext);
   const socket = wsContext?.Socket;
   const [isInviteSentOpen, setIsInviteSentOpen] = useState(false);

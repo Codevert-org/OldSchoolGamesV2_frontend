@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { type Appstate } from "../contexts/appContext";
 import { AppContext } from "../contexts";
 
-type AppProps = {
+type AppProps = Readonly<{
   children: ReactNode
-}
+}>
 
 function AppProvider({children} : AppProps) {
   

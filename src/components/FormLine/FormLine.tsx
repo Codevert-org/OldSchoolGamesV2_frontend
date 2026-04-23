@@ -1,13 +1,13 @@
 import type { ChangeEvent } from 'react';
 
-type formLineProps = {
+type formLineProps = Readonly<{
   name: string;
   inputType?: string;
   label?: string;
   value?: string;
   required?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-}
+}>
 
 export function FormLine(props: formLineProps) {
   const inputProps = props.onChange

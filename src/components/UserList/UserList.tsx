@@ -2,7 +2,9 @@ import type { IUser } from "../../interfaces/events/IUsers";
 import { UserItem } from "../UserItem/UserItem";
 import "./UserList.css"
 
-export function UserList({users}: {users: IUser[]}) {
+type UserListProps = Readonly<{ users: IUser[] }>;
+
+export function UserList({ users }: UserListProps) {
   return (
     <div className="userList">
       <span className="userList-title">On line :</span>

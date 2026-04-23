@@ -5,7 +5,9 @@ export interface INotification {
   message: string;
 }
 
-export function NotificationFeed({ notifications }: { notifications: INotification[] }) {
+type NotificationFeedProps = Readonly<{ notifications: INotification[] }>;
+
+export function NotificationFeed({ notifications }: NotificationFeedProps) {
   return (
     <div className="notification-feed">
       {notifications.map((n) => (
