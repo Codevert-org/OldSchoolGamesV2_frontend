@@ -37,9 +37,13 @@ form {
 
 /* Field state wrappers */
 .field-wrapper {
-  position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 20px;
   align-items: center;
+}
+
+.field-wrapper .form-line {
+  grid-column: 1;
 }
 
 .field-wrapper.field-error input {
@@ -51,8 +55,8 @@ form {
 }
 
 .field-icon {
-  margin-left: 6px;
-  flex-shrink: 0;
+  grid-column: 2;
+  justify-self: center;
 }
 
 .field-icon--valid {
@@ -61,6 +65,24 @@ form {
 
 .field-icon--invalid {
   color: var(--red-error);
+}
+
+/* Collapsible transition (same pattern as .expandable) */
+.collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .2s ease-out, opacity .2s ease-out;
+  overflow: hidden;
+  & > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+.collapsible--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 /* Password criteria checklist */

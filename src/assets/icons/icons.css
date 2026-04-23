@@ -1,6 +1,6 @@
 @keyframes typewriter {
-  from { max-width: 0; }
-  to   { max-width: 100%; }
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
 }
 
 @keyframes fadeDown {
@@ -9,8 +9,9 @@
 }
 
 .error-message {
-  overflow: hidden;
+  display: inline-block;
   white-space: nowrap;
+  color: var(--red-error);
   animation: typewriter 300ms steps(20, end) forwards;
 }
 

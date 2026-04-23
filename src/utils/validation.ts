@@ -1,5 +1,7 @@
 export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()\-_=+[\]{}|;':",.<>?/\\]).{8,16}$/;
 
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function validatePassword(value: string) {
   return {
     length: value.length >= 8 && value.length <= 16,

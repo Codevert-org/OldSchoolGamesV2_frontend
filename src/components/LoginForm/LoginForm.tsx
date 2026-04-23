@@ -12,7 +12,7 @@ import { checkPseudoAvailable } from '../../services/users.service';
 import type { IAuthResponse } from '../../interfaces/IauthResponse';
 import { FormLine } from '../FormLine/FormLine';
 import type { IApiError } from '../../interfaces/IApiError';
-import { validatePassword, createPseudoChecker } from '../../utils/validation';
+import { validatePassword, createPseudoChecker, EMAIL_REGEX } from '../../utils/validation';
 import ValidIcon from '../../assets/icons/ValidIcon';
 import InvalidIcon from '../../assets/icons/InvalidIcon';
 
@@ -34,16 +34,55 @@ type ErrorState = { text: string; phase: 'visible' | 'exiting' } | null;
 
 function useFieldError() {
   const [error, setError] = useState<ErrorState>(null);
-
   const show = (text: string) => setError({ text, phase: 'visible' });
-
-  const dismiss = () => {
-    setError((prev) => prev ? { ...prev, phase: 'exiting' } : null);
-  };
-
+  const dismiss = () => setError((prev) => prev ? { ...prev, phase: 'exiting' } : null);
   const clear = () => setError(null);
-
   return { error, show, dismiss, clear };
+}
+
+function FieldError({ error, onClear }: Readonly<{ error: ErrorState; onClear: () => void }>) {
+  return (
+    <div className={`collapsible${error ? ' collapsible--open' : ''}`}>
+      <div
+        className={`error-message${error?.phase === 'exiting' ? ' error-message--exit' : ''}`}
+        onAnimationEnd={() => { if (error?.phase === 'exiting') onClear(); }}
+      >
+        {error?.text}
+      </div>
+    </div>
+  );
+}
+
+type PseudoStatus = 'idle' | 'checking' | 'available' | 'taken';
+
+function pseudoWrapperClass(status: PseudoStatus): string {
+  if (status === 'taken') return 'field-wrapper field-error';
+  if (status === 'available') return 'field-wrapper field-valid';
+  return 'field-wrapper';
+}
+
+function emailWrapperClass(emailValid: boolean | null, isLogin: boolean): string {
+  if (emailValid === false) return 'field-wrapper field-error';
+  if (emailValid === true && !isLogin) return 'field-wrapper field-valid';
+  return 'field-wrapper';
+}
+
+function passwordWrapperClass(isLogin: boolean, touched: boolean, valid: boolean, hasValue: boolean): string {
+  if (!isLogin && touched && !valid) return 'field-wrapper field-error';
+  if (!isLogin && valid && hasValue) return 'field-wrapper field-valid';
+  return 'field-wrapper';
+}
+
+function passwordConfirmWrapperClass(confirmValid: boolean | null): string {
+  if (confirmValid === false) return 'field-wrapper field-error';
+  if (confirmValid === true) return 'field-wrapper field-valid';
+  return 'field-wrapper';
+}
+
+function criterionClass(met: boolean, touched: boolean): string {
+  if (met) return 'criterion-ok';
+  if (touched) return 'criterion-ko';
+  return 'criterion-neutral';
 }
 
 export function LoginForm() {
@@ -57,10 +96,12 @@ export function LoginForm() {
 
   // Register fields
   const [pseudo, setPseudo] = useState('');
-  const [pseudoStatus, setPseudoStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [pseudoStatus, setPseudoStatus] = useState<PseudoStatus>('idle');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [passwordCriteriaVisible, setPasswordCriteriaVisible] = useState(false);
+  const [email, setEmail] = useState('');
   const [emailValid, setEmailValid] = useState<boolean | null>(null);
   const [passwordConfirmValid, setPasswordConfirmValid] = useState<boolean | null>(null);
 
@@ -86,31 +127,43 @@ export function LoginForm() {
         pseudoError.dismiss();
       } else {
         setPseudoStatus('taken');
-        pseudoError.show('_ Pseudo already taken');
+        pseudoError.show('Pseudo already taken');
       }
     });
   };
 
   // --- Email ---
-  const handleEmailBlur = (e: { target: HTMLInputElement }) => {
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    setEmailValid(valid);
-    if (!valid) {
-      emailError.show('_ Invalid email format');
-    } else {
+    setEmail(value);
+    if (emailValid === null) return;
+    if (EMAIL_REGEX.test(value)) {
+      setEmailValid(true);
       emailError.dismiss();
+    } else {
+      setEmailValid(null);
     }
   };
 
+  const handleEmailBlur = (e: { target: HTMLInputElement }) => {
+    const valid = EMAIL_REGEX.test(e.target.value);
+    setEmailValid(valid);
+    if (valid) {
+      emailError.dismiss();
+    } else {
+      emailError.show('Invalid email format');
+    }
+  };
 
   // --- Password ---
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+    setPasswordCriteriaVisible(true);
   };
 
   const handlePasswordBlur = () => {
     setPasswordTouched(true);
+    if (pwValid) setPasswordCriteriaVisible(false);
   };
 
   // --- PasswordConfirm ---
@@ -126,10 +179,10 @@ export function LoginForm() {
   const handlePasswordConfirmBlur = () => {
     const valid = password === passwordConfirm && passwordConfirm.length > 0;
     setPasswordConfirmValid(valid);
-    if (!valid) {
-      passwordConfirmError.show('_ Passwords do not match');
-    } else {
+    if (valid) {
       passwordConfirmError.dismiss();
+    } else {
+      passwordConfirmError.show('Passwords do not match');
     }
   };
 
@@ -207,7 +260,7 @@ export function LoginForm() {
             {/* Pseudo — register only */}
             <div className="expandable">
               <div>
-                <div className={`field-wrapper${pseudoStatus === 'taken' ? ' field-error' : pseudoStatus === 'available' ? ' field-valid' : ''}`}>
+                <div className={pseudoWrapperClass(pseudoStatus)}>
                   <FormLine
                     name="pseudo"
                     required={!firstIsActive}
@@ -217,39 +270,27 @@ export function LoginForm() {
                   {pseudoStatus === 'available' && <ValidIcon className="field-icon field-icon--valid" size={14} />}
                   {pseudoStatus === 'taken' && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
                 </div>
-                {pseudoError.error && (
-                  <div
-                    className={`error-message${pseudoError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
-                    onAnimationEnd={() => { if (pseudoError.error?.phase === 'exiting') pseudoError.clear(); }}
-                  >
-                    {pseudoError.error.text}
-                  </div>
-                )}
+                <FieldError error={pseudoError.error} onClear={pseudoError.clear} />
               </div>
             </div>
 
             {/* Email */}
-            <div className={`field-wrapper${emailValid === false ? ' field-error' : emailValid === true ? ' field-valid' : ''}`}>
+            <div className={emailWrapperClass(emailValid, firstIsActive)}>
               <FormLine
                 name="email"
                 inputType="email"
                 required
+                value={email}
+                onChange={handleEmailChange}
                 onBlur={handleEmailBlur}
               />
-              {emailValid === true && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+              {!firstIsActive && emailValid === true && <ValidIcon className="field-icon field-icon--valid" size={14} />}
               {emailValid === false && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
             </div>
-            {emailError.error && (
-              <div
-                className={`error-message${emailError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
-                onAnimationEnd={() => { if (emailError.error?.phase === 'exiting') emailError.clear(); }}
-              >
-                {emailError.error.text}
-              </div>
-            )}
+            <FieldError error={emailError.error} onClear={emailError.clear} />
 
             {/* Password */}
-            <div className={`field-wrapper${passwordTouched && !pwValid ? ' field-error' : pwValid && password.length > 0 ? ' field-valid' : ''}`}>
+            <div className={passwordWrapperClass(firstIsActive, passwordTouched, pwValid, password.length > 0)}>
               <FormLine
                 name="password"
                 inputType="password"
@@ -263,27 +304,20 @@ export function LoginForm() {
             </div>
 
             {/* Password criteria checklist — register only */}
-            {!firstIsActive && password.length > 0 && (
+            <div className={`collapsible${!firstIsActive && passwordCriteriaVisible ? ' collapsible--open' : ''}`}>
               <ul className="password-criteria">
                 {PASSWORD_CRITERIA.map(({ key, label }) => (
-                  <li
-                    key={key}
-                    className={
-                      pwResult[key] ? 'criterion-ok'
-                      : passwordTouched ? 'criterion-ko'
-                      : 'criterion-neutral'
-                    }
-                  >
+                  <li key={key} className={criterionClass(pwResult[key], passwordTouched)}>
                     {pwResult[key] ? '[x]' : '[ ]'} {label}
                   </li>
                 ))}
               </ul>
-            )}
+            </div>
 
             {/* PasswordConfirm — register only */}
             <div className="expandable">
               <div>
-                <div className={`field-wrapper${passwordConfirmValid === false ? ' field-error' : passwordConfirmValid === true ? ' field-valid' : ''}`}>
+                <div className={passwordConfirmWrapperClass(passwordConfirmValid)}>
                   <FormLine
                     name="passwordConfirm"
                     inputType="password"
@@ -296,14 +330,7 @@ export function LoginForm() {
                   {passwordConfirmValid === true && <ValidIcon className="field-icon field-icon--valid" size={14} />}
                   {passwordConfirmValid === false && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
                 </div>
-                {passwordConfirmError.error && (
-                  <div
-                    className={`error-message${passwordConfirmError.error.phase === 'exiting' ? ' error-message--exit' : ''}`}
-                    onAnimationEnd={() => { if (passwordConfirmError.error?.phase === 'exiting') passwordConfirmError.clear(); }}
-                  >
-                    {passwordConfirmError.error.text}
-                  </div>
-                )}
+                <FieldError error={passwordConfirmError.error} onClear={passwordConfirmError.clear} />
               </div>
             </div>
 
