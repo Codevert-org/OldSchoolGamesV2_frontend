@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FocusEvent } from 'react';
 
 type formLineProps = Readonly<{
   name: string;
@@ -7,6 +7,7 @@ type formLineProps = Readonly<{
   value?: string;
   required?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
 }>
 
 export function FormLine(props: formLineProps) {
@@ -24,6 +25,7 @@ export function FormLine(props: formLineProps) {
         id={props.name}
         name={props.name}
         required={props.required || false}
+        onBlur={props.onBlur}
         {...inputProps}
       />
     </div>
