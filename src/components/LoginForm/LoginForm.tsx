@@ -111,7 +111,12 @@ export function LoginForm() {
 
   const pseudoChecker = useRef(createPseudoChecker(checkPseudoAvailable));
 
-  const switchIndex = () => setfirstIsActive(!firstIsActive);
+  const switchIndex = () => {
+    setfirstIsActive((prev) => !prev);
+    setEmail('');
+    setEmailValid(null);
+    emailError.clear();
+  };
 
   // --- Pseudo ---
   const handlePseudoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -187,6 +192,7 @@ export function LoginForm() {
   };
 
   // --- Form validity ---
+  const loginFormValid = emailValid === true;
   const pwResult = validatePassword(password);
   const pwValid = Object.values(pwResult).every(Boolean);
   const registerFormValid =
@@ -349,7 +355,7 @@ export function LoginForm() {
             <Button
               type="submit"
               label="Submit"
-              disabled={!firstIsActive && !registerFormValid}
+              disabled={firstIsActive ? !loginFormValid : !registerFormValid}
             />
           </form>
         </Box>

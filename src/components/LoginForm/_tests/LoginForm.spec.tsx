@@ -35,6 +35,65 @@ function switchToRegister() {
   fireEvent.click(switchBtn);
 }
 
+describe('LoginForm — login mode', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('submit button is disabled when email is empty', () => {
+    renderLoginForm();
+    const submitBtn = screen.getByRole('button', { name: /submit/i });
+    expect(submitBtn).toBeDisabled();
+  });
+
+  it('submit button is disabled when email is invalid', async () => {
+    renderLoginForm();
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: 'notanemail' } });
+    fireEvent.blur(emailInput);
+    await waitFor(() => {
+      const submitBtn = screen.getByRole('button', { name: /submit/i });
+      expect(submitBtn).toBeDisabled();
+    });
+  });
+
+  it('submit button is enabled when email is valid', async () => {
+    renderLoginForm();
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
+    fireEvent.blur(emailInput);
+    await waitFor(() => {
+      const submitBtn = screen.getByRole('button', { name: /submit/i });
+      expect(submitBtn).not.toBeDisabled();
+    });
+  });
+
+  it('shows error message on email blur when format invalid', async () => {
+    renderLoginForm();
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: 'bad-email' } });
+    fireEvent.blur(emailInput);
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email format/i)).toBeTruthy();
+    });
+  });
+
+  it('email state resets when switching modes', async () => {
+    renderLoginForm();
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: 'bad-email' } });
+    fireEvent.blur(emailInput);
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email format/i)).toBeTruthy();
+    });
+    const switchBtn = screen.getByRole('button', { name: /register/i });
+    fireEvent.click(switchBtn);
+    await waitFor(() => {
+      expect(screen.queryByText(/invalid email format/i)).toBeNull();
+    });
+  });
+});
+
 describe('LoginForm — register mode', () => {
   beforeEach(() => {
     vi.clearAllMocks();

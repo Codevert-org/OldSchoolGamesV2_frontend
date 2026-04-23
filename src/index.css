@@ -51,6 +51,7 @@ input {
 	border-right: 1px solid #224422;
 	border-bottom: 1px solid #224422;
 	margin: 10px;
+	caret-shape: block;
 }
 
 input:focus-visible {
