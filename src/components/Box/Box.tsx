@@ -1,10 +1,10 @@
 import './Box.css'
 import type { JSX } from 'react'
 
-interface Props {
+type Props = Readonly<{
   children: JSX.Element[] | JSX.Element
   className?: string
-}
+}>
 
 export function Box({children, className}: Props) {
 

@@ -1,6 +1,8 @@
 import './Switch.css';
 
-export function Switch(props: { firstIsActive: boolean; switchIndex: () => void; labels: string[]; }) {
+type SwitchProps = Readonly<{ firstIsActive: boolean; switchIndex: () => void; labels: string[] }>;
+
+export function Switch(props: SwitchProps) {
 
   return (
     <button

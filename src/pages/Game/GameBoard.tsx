@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface GameBoardProps {
+type GameBoardProps = Readonly<{
   cols: string;
   rows: string;
   width: string;
   handleCellClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   cellsContent?: Record<string, React.ReactNode>;
-}
+}>;
 
 export function GameBoard(props: GameBoardProps) {
   const cells = [];

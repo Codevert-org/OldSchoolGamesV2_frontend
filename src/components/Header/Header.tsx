@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { AppContext } from '../../contexts';
 import { Box } from '../Box/Box';
 
-export function Header({ ioClose }: { ioClose?: () => void }) {
+type HeaderProps = Readonly<{ ioClose?: () => void }>;
+
+export function Header({ ioClose }: HeaderProps) {
   useEffect(() => {
     const documentElement = document.querySelector('html');
     

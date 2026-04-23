@@ -3,9 +3,9 @@ import socketIOClient from "socket.io-client";
 
 import WsContext from "../contexts/wsContext";
 
-type IoSocketProviderProps = {
+type IoSocketProviderProps = Readonly<{
     children: ReactNode
-}
+}>
 
 function WsProvider({children} : IoSocketProviderProps) {
     let ioUrl: string = "";
