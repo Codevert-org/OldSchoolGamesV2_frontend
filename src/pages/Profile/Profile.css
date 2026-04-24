@@ -2,12 +2,40 @@ h1 {
   text-align: center;
 }
 
+.collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .2s ease-out, opacity .2s ease-out;
+  overflow: hidden;
+  & > * {
+    min-height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.collapsible--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
 .profile-page .expandable {
-  grid-template-rows: 0fr 0fr 0fr;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .2s ease-out, opacity .2s ease-out;
+  overflow: hidden;
+  & > div {
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 .profile-page .expanded .expandable {
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 .avatar-preview {

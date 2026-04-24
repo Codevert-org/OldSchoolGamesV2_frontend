@@ -13,7 +13,7 @@ export function Header({ ioClose }: HeaderProps) {
     if (menu.current && documentElement) {
       document.addEventListener('click', (e) => {
         if (menu.current !== null && !(menu.current.contains(e.target as Node))) {
-          menu.current!.classList.remove("expanded");
+          menu.current.classList.remove("expanded");
         }
       });
     }

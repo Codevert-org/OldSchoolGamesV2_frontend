@@ -117,7 +117,6 @@ export function Puissance4() {
           return;
         }
         if(data.eventType === 'getGameData') {
-          //TODO utiliser useRef ?
           setOpponent(data.result.opponent);
           setTurn(`À ${data.result.turn} de jouer`);
         }

@@ -6,6 +6,11 @@ import { checkPseudoAvailable, fetchUpdateUser } from '../../services/users.serv
 import type { IUserResponse } from '../../interfaces/IUserResponse';
 import { extension } from '../../utils/constants/extensions';
 
+function criterionClass(ok: boolean, touched: boolean): string {
+  if (!touched) return 'criterion-neutral';
+  return ok ? 'criterion-ok' : 'criterion-ko';
+}
+
 const PASSWORD_RULES = [
   { label: 'Au moins 1 chiffre', test: (v: string) => /\d/.test(v) },
   { label: 'Au moins 1 majuscule', test: (v: string) => /[A-Z]/.test(v) },
@@ -29,6 +34,7 @@ export function Profile() {
 
   // Password contrôlé
   const [newPassword, setNewPassword] = useState('');
+  const [newPasswordTouched, setNewPasswordTouched] = useState(false);
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   const handlePseudoChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -129,37 +135,44 @@ export function Profile() {
               onChange={(e) => setIsPasswordChangeOpen(e.target.checked)}
             />
             <div className="expandable">
-              <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
-              <FormLine
-                name="newPassword"
-                inputType="password"
-                label="Nouveau mot de passe"
-                required={isPasswordChangeOpen}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              {isPasswordChangeOpen && newPassword.length > 0 && (
-                <ul className="password-rules">
-                  {PASSWORD_RULES.map((rule) => (
-                    <li key={rule.label} className={rule.test(newPassword) ? 'rule-ok' : 'rule-ko'}>
-                      {rule.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <FormLine
-                name="newPasswordConfirm"
-                inputType="password"
-                label="Confirmez"
-                required={isPasswordChangeOpen}
-                value={newPasswordConfirm}
-                onChange={(e) => setNewPasswordConfirm(e.target.value)}
-              />
-              {isPasswordChangeOpen && newPasswordConfirm.length > 0 && (
-                <div className={`pseudo-status pseudo-status--${newPasswordConfirmValid ? 'available' : 'taken'}`}>
-                  {newPasswordConfirmValid ? '✓ Les mots de passe correspondent' : '✗ Les mots de passe ne correspondent pas'}
+              <div>
+                <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
+                <FormLine
+                  name="newPassword"
+                  inputType="password"
+                  label="Nouveau mot de passe"
+                  required={isPasswordChangeOpen}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  onBlur={() => setNewPasswordTouched(true)}
+                />
+                <div className={`collapsible${isPasswordChangeOpen && newPassword.length > 0 ? ' collapsible--open' : ''}`}>
+                  <ul className="password-criteria">
+                    {PASSWORD_RULES.map((rule) => {
+                      const ok = rule.test(newPassword);
+                      const cls = criterionClass(ok, newPasswordTouched);
+                      return (
+                        <li key={rule.label} className={cls}>
+                          {ok ? '[x]' : '[ ]'} {rule.label}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-              )}
+                <FormLine
+                  name="newPasswordConfirm"
+                  inputType="password"
+                  label="Confirmez"
+                  required={isPasswordChangeOpen}
+                  value={newPasswordConfirm}
+                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                />
+                <div className={`collapsible${isPasswordChangeOpen && newPasswordConfirm.length > 0 ? ' collapsible--open' : ''}`}>
+                  <div className={`pseudo-status pseudo-status--${newPasswordConfirmValid ? 'available' : 'taken'}`}>
+                    {newPasswordConfirmValid ? '✓ Les mots de passe correspondent' : '✗ Les mots de passe ne correspondent pas'}
+                  </div>
+                </div>
+              </div>
             </div>
             <div>
               <Button label="avatar" callback={() => setIsCropperOpen(true)} />
