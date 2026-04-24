@@ -74,7 +74,7 @@ describe('LoginForm — login mode', () => {
     fireEvent.change(emailInput, { target: { value: 'bad-email' } });
     fireEvent.blur(emailInput);
     await waitFor(() => {
-      expect(screen.getByText(/invalid email format/i)).toBeTruthy();
+      expect(screen.getByText(/format email invalide/i)).toBeTruthy();
     });
   });
 
@@ -84,12 +84,12 @@ describe('LoginForm — login mode', () => {
     fireEvent.change(emailInput, { target: { value: 'bad-email' } });
     fireEvent.blur(emailInput);
     await waitFor(() => {
-      expect(screen.getByText(/invalid email format/i)).toBeTruthy();
+      expect(screen.getByText(/format email invalide/i)).toBeTruthy();
     });
     const switchBtn = screen.getByRole('button', { name: /register/i });
     fireEvent.click(switchBtn);
     await waitFor(() => {
-      expect(screen.queryByText(/invalid email format/i)).toBeNull();
+      expect(screen.queryByText(/format email invalide/i)).toBeNull();
     });
   });
 });
@@ -143,7 +143,7 @@ describe('LoginForm — register mode', () => {
     fireEvent.change(confirmInput, { target: { value: 'different' } });
     fireEvent.blur(confirmInput);
     await waitFor(() => {
-      expect(screen.getByText(/passwords do not match/i)).toBeTruthy();
+      expect(screen.getByText(/les mots de passe ne correspondent pas/i)).toBeTruthy();
     });
   });
 });

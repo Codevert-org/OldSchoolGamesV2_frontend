@@ -156,7 +156,7 @@ export function LoginForm() {
     if (valid) {
       emailError.dismiss();
     } else {
-      emailError.show('Invalid email format');
+      emailError.show('Format email invalide');
     }
   };
 
@@ -187,7 +187,7 @@ export function LoginForm() {
     if (valid) {
       passwordConfirmError.dismiss();
     } else {
-      passwordConfirmError.show('Passwords do not match');
+      passwordConfirmError.show('Les mots de passe ne correspondent pas');
     }
   };
 
