@@ -25,6 +25,7 @@ export function FormLine(props: formLineProps) {
         id={props.name}
         name={props.name}
         required={props.required || false}
+        spellCheck={false}
         onBlur={props.onBlur}
         {...inputProps}
       />
