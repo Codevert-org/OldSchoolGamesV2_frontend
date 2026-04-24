@@ -86,7 +86,7 @@ export function Profile() {
         pseudoError.dismiss();
       } else {
         setPseudoStatus('taken');
-        pseudoError.show('_ Pseudo already taken');
+        pseudoError.show('Pseudo déjà utilisé');
       }
     });
   }, [user?.pseudo, pseudoError]);
