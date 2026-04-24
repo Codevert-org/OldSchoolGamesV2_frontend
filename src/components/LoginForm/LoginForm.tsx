@@ -132,7 +132,7 @@ export function LoginForm() {
         pseudoError.dismiss();
       } else {
         setPseudoStatus('taken');
-        pseudoError.show('Pseudo already taken');
+        pseudoError.show('Pseudo déjà utilisé');
       }
     });
   };
