@@ -161,7 +161,7 @@ button.menuItem {
 		background-size: 40px;
 	}
 	header h1 {
-		font-size: 20px;
+		font-size: 16px;
 		padding-top: 10px;
 	}
 	.logthumb {
@@ -174,12 +174,5 @@ button.menuItem {
 			border-radius: 13px;
 			margin-right: 0;
 		}
-	}
-}
-	
-@media (max-width: 750px) {
-	header h1 {
-		font-size: 16px;
-		padding-top: 10px;
 	}
 }
