@@ -61,6 +61,9 @@ export function Header({ ioClose }: HeaderProps) {
             </button>
           </div>
           <Box className="logMenu">
+            <div className="menuItem logMenu-mobile-only">
+              <span>{appContext.appState.user.pseudo}</span>
+            </div>
             <div className="menuItem">
               <Link to='/profile' onClick={collapseMenu}>
                 Profile
