@@ -13,8 +13,8 @@ export function Button(props : Props) {
   return (
     <div className='button_wrapper'>
       <button
-        onClick={props.callback ? props.callback : () => {}}
-        type={props.type ? props.type : 'button'}
+        onClick={props.callback ?? (() => {})}
+        type={props.type ?? 'button'}
         disabled={props.disabled}
         >
         <span>

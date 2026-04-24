@@ -20,7 +20,6 @@ export function UserItem({ user }: UserItemProps) {
   const handleInviteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     if(!user.invite) {
-      // TODO switch to chooseGame when implemented
       setIsGameSelectionOpen(true);
     }
     if(user.invite === 'to') {

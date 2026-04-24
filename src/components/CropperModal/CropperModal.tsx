@@ -17,7 +17,7 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0});
   const [pixelCrop, setPixelCrop] = useState<Area>({ x: 0, y: 0, width: 0, height:0 });
   const [zoom, setZoom] = useState<number>(1);
-  const [image, setBaseImage] = useState<string>('');
+  const [baseImage, setBaseImage] = useState<string>('');
   const modal = useRef<HTMLDialogElement>(null);
   const preview = useRef<HTMLImageElement>(null)
 
@@ -52,7 +52,7 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
 	}
 
   async function cropImage() {
-		const cropResult = await getCroppedImg(image, pixelCrop);
+		const cropResult = await getCroppedImg(baseImage, pixelCrop);
     if(cropResult) {
       setImage(cropResult);
     }
@@ -88,7 +88,7 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
 	    }}
     >
       <div>
-        {!image &&
+        {!baseImage &&
           <>
           <input
             id="avatarInput"
@@ -100,12 +100,12 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
           </>
         }
         {
-          image &&
+          baseImage &&
           <>
             <h2>Image cropper</h2>
             <div style={{position: 'relative', width: '100%', height: '300px'}}>
               <Cropper
-                image={image}
+                image={baseImage}
                 crop={crop}
                 zoom={zoom}
                 cropShape="round"
@@ -120,7 +120,7 @@ export function CropperModal({ setImage, croppedImage, showModal, setShowModal }
               <img
                   ref={preview}
                   className="prof-pic"
-                  src={image}
+                  src={baseImage}
                   alt="Profile example"
                 />
             </div>

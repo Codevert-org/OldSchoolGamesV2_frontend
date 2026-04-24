@@ -4,7 +4,6 @@ import AppProvider from './providers/AppProvider.tsx';
 import WsProvider from './providers/WsProvider.tsx';
 import { Login, Home, Dashboard, Profile, Morpion, Puissance4, Reversi } from './pages';
 import { ProtectedContent } from './components';
-// TODO create index for pages
 
 import './index.css';
 
