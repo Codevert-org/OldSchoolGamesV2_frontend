@@ -172,7 +172,9 @@ export function Profile() {
             />
             <div className="expandable">
               <div>
-                <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
+                <div className="field-wrapper">
+                  <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
+                </div>
                 <div className={newPasswordTouched && !newPasswordRulesValid ? 'field-wrapper field-error' : 'field-wrapper'}>
                   <FormLine
                     name="newPassword"
@@ -193,14 +195,16 @@ export function Profile() {
                     ))}
                   </ul>
                 </div>
-                <FormLine
-                  name="newPasswordConfirm"
-                  inputType="password"
-                  label="Confirmez"
-                  required={isPasswordChangeOpen}
-                  value={newPasswordConfirm}
-                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                />
+                <div className="field-wrapper">
+                  <FormLine
+                    name="newPasswordConfirm"
+                    inputType="password"
+                    label="Confirmez"
+                    required={isPasswordChangeOpen}
+                    value={newPasswordConfirm}
+                    onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                  />
+                </div>
                 <div className={`collapsible${isPasswordChangeOpen && newPasswordConfirm.length > 0 ? ' collapsible--open' : ''}`}>
                   <div className={`pseudo-status pseudo-status--${newPasswordConfirmValid ? 'available' : 'taken'}`}>
                     {newPasswordConfirmValid ? '✓ Les mots de passe correspondent' : '✗ Les mots de passe ne correspondent pas'}

@@ -2,6 +2,10 @@ h1 {
   text-align: center;
 }
 
+.profile-page form {
+  max-width: fit-content;
+}
+
 .collapsible {
   display: grid;
   grid-template-rows: 0fr;
