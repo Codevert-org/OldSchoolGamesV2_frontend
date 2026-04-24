@@ -1,23 +1,58 @@
 import './Profile.css';
-import { useCallback, useContext, useEffect, useRef, useState, type ChangeEvent } from 'react';
+import '../../components/LoginForm/loginForm.css';
+import '../../assets/icons/icons.css';
+import { useCallback, useContext, useRef, useState, type ChangeEvent } from 'react';
 import { AppContext } from '../../contexts';
 import { Box, Button, CropperModal, FormLine } from '../../components';
 import { checkPseudoAvailable, fetchUpdateUser } from '../../services/users.service';
 import type { IUserResponse } from '../../interfaces/IUserResponse';
 import { extension } from '../../utils/constants/extensions';
+import { validatePassword, createPseudoChecker } from '../../utils/validation';
+import ValidIcon from '../../assets/icons/ValidIcon';
+import InvalidIcon from '../../assets/icons/InvalidIcon';
+
+type PseudoStatus = 'idle' | 'checking' | 'available' | 'taken';
+type ErrorState = { text: string; phase: 'visible' | 'exiting' } | null;
+
+function useFieldError() {
+  const [error, setError] = useState<ErrorState>(null);
+  const show = (text: string) => setError({ text, phase: 'visible' });
+  const dismiss = () => setError((prev) => prev ? { ...prev, phase: 'exiting' } : null);
+  const clear = () => setError(null);
+  return { error, show, dismiss, clear };
+}
+
+function FieldError({ error, onClear }: Readonly<{ error: ErrorState; onClear: () => void }>) {
+  return (
+    <div className={`collapsible${error ? ' collapsible--open' : ''}`}>
+      <div
+        className={`error-message${error?.phase === 'exiting' ? ' error-message--exit' : ''}`}
+        onAnimationEnd={() => { if (error?.phase === 'exiting') onClear(); }}
+      >
+        {error?.text}
+      </div>
+    </div>
+  );
+}
+
+function pseudoWrapperClass(status: PseudoStatus): string {
+  if (status === 'taken') return 'field-wrapper field-error';
+  if (status === 'available') return 'field-wrapper field-valid';
+  return 'field-wrapper';
+}
 
 function criterionClass(ok: boolean, touched: boolean): string {
   if (!touched) return 'criterion-neutral';
   return ok ? 'criterion-ok' : 'criterion-ko';
 }
 
-const PASSWORD_RULES = [
-  { label: 'Au moins 1 chiffre', test: (v: string) => /\d/.test(v) },
-  { label: 'Au moins 1 majuscule', test: (v: string) => /[A-Z]/.test(v) },
-  { label: 'Au moins 1 minuscule', test: (v: string) => /[a-z]/.test(v) },
-  { label: 'Au moins 1 caractère spécial', test: (v: string) => /[^a-zA-Z0-9\s]/.test(v) },
-  { label: '8 à 16 caractères, sans espace', test: (v: string) => /^[^\s]{8,16}$/.test(v) },
-];
+const PASSWORD_CRITERIA = [
+  { key: 'length',    label: '8–16 characters' },
+  { key: 'uppercase', label: 'Uppercase' },
+  { key: 'lowercase', label: 'Lowercase' },
+  { key: 'digit',     label: 'Number' },
+  { key: 'special',   label: 'Special character' },
+] as const;
 
 export function Profile() {
   const appContext = useContext(AppContext);
@@ -27,12 +62,13 @@ export function Profile() {
   const formRef = useRef(null);
   const user = appContext.appState.user;
 
-  // Pseudo contrôlé
+  // Pseudo
   const [pseudo, setPseudo] = useState(user?.pseudo ?? '');
-  const [pseudoStatus, setPseudoStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pseudoStatus, setPseudoStatus] = useState<PseudoStatus>('idle');
+  const pseudoError = useFieldError();
+  const pseudoChecker = useRef(createPseudoChecker(checkPseudoAvailable));
 
-  // Password contrôlé
+  // Password
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordTouched, setNewPasswordTouched] = useState(false);
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
@@ -41,28 +77,29 @@ export function Profile() {
     const value = e.target.value;
     setPseudo(value);
     setPseudoStatus('idle');
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    // Pas de check si inchangé par rapport au pseudo actuel
+    pseudoError.clear();
     if (value === user?.pseudo || value.length < 2) return;
     setPseudoStatus('checking');
-    debounceRef.current = setTimeout(async () => {
-      const available = await checkPseudoAvailable(value);
-      setPseudoStatus(available ? 'available' : 'taken');
-    }, 1000);
-  }, [user?.pseudo]);
+    pseudoChecker.current(value, (available) => {
+      if (available) {
+        setPseudoStatus('available');
+        pseudoError.dismiss();
+      } else {
+        setPseudoStatus('taken');
+        pseudoError.show('Pseudo déjà utilisé');
+      }
+    });
+  }, [user?.pseudo, pseudoError]);
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
-
-  const newPasswordRulesValid = PASSWORD_RULES.every((r) => r.test(newPassword));
+  const pwResult = validatePassword(newPassword);
+  const newPasswordRulesValid = Object.values(pwResult).every(Boolean);
   const newPasswordConfirmValid = newPassword === newPasswordConfirm && newPasswordConfirm.length > 0;
 
   const pseudoChanged = pseudo !== user?.pseudo;
   const pseudoValid = !pseudoChanged || (pseudo.length >= 2 && pseudoStatus === 'available');
-  const passwordSectionValid = !isPasswordChangeOpen || (newPasswordRulesValid && newPasswordConfirmValid);
+  const passwordSectionValid = !isPasswordChangeOpen
+    || newPassword.length === 0
+    || (newPasswordRulesValid && newPasswordConfirmValid);
   const formValid = pseudoValid && passwordSectionValid;
 
   const handleSubmit = async (formData: FormData) => {
@@ -96,10 +133,11 @@ export function Profile() {
       }));
       setCroppedImage('');
       setNewPassword('');
+      setNewPasswordTouched(false);
       setNewPasswordConfirm('');
       setPseudoStatus('idle');
-    } catch (e) {
-      console.log(e);
+    } catch {
+      // server error — out of scope for this story
     }
   };
 
@@ -114,19 +152,17 @@ export function Profile() {
       <div className="profile-page">
         <h1>profil</h1>
         <Box>
-          <form ref={formRef} action={handleSubmit} className={isPasswordChangeOpen ? 'expanded' : ''}>
-            <FormLine
-              name="pseudo"
-              value={pseudo}
-              onChange={handlePseudoChange}
-            />
-            {pseudoChanged && pseudo.length >= 2 && (
-              <div className={`pseudo-status pseudo-status--${pseudoStatus}`}>
-                {pseudoStatus === 'checking' && 'Vérification…'}
-                {pseudoStatus === 'available' && '✓ Disponible'}
-                {pseudoStatus === 'taken' && '✗ Déjà utilisé'}
-              </div>
-            )}
+          <form ref={formRef} action={handleSubmit} className={isPasswordChangeOpen ? 'expanded' : ''} noValidate>
+            <div className={pseudoWrapperClass(pseudoStatus)}>
+              <FormLine
+                name="pseudo"
+                value={pseudo}
+                onChange={handlePseudoChange}
+              />
+              {pseudoStatus === 'available' && <ValidIcon className="field-icon field-icon--valid" size={14} />}
+              {pseudoStatus === 'taken' && <InvalidIcon className="field-icon field-icon--invalid" size={14} />}
+            </div>
+            <FieldError error={pseudoError.error} onClear={pseudoError.clear} />
             <label htmlFor="changePassword">Changement de mot de passe ?</label>
             <input
               type="checkbox"
@@ -136,37 +172,39 @@ export function Profile() {
             />
             <div className="expandable">
               <div>
-                <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
-                <FormLine
-                  name="newPassword"
-                  inputType="password"
-                  label="Nouveau mot de passe"
-                  required={isPasswordChangeOpen}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  onBlur={() => setNewPasswordTouched(true)}
-                />
+                <div className="field-wrapper">
+                  <FormLine name="oldPassword" inputType="password" label="Mot de passe actuel" required={isPasswordChangeOpen} />
+                </div>
+                <div className={newPasswordTouched && !newPasswordRulesValid ? 'field-wrapper field-error' : 'field-wrapper'}>
+                  <FormLine
+                    name="newPassword"
+                    inputType="password"
+                    label="Nouveau mot de passe"
+                    required={isPasswordChangeOpen}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    onBlur={() => setNewPasswordTouched(true)}
+                  />
+                </div>
                 <div className={`collapsible${isPasswordChangeOpen && newPassword.length > 0 ? ' collapsible--open' : ''}`}>
                   <ul className="password-criteria">
-                    {PASSWORD_RULES.map((rule) => {
-                      const ok = rule.test(newPassword);
-                      const cls = criterionClass(ok, newPasswordTouched);
-                      return (
-                        <li key={rule.label} className={cls}>
-                          {ok ? '[x]' : '[ ]'} {rule.label}
-                        </li>
-                      );
-                    })}
+                    {PASSWORD_CRITERIA.map(({ key, label }) => (
+                      <li key={key} className={criterionClass(pwResult[key], newPasswordTouched)}>
+                        {pwResult[key] ? '[x]' : '[ ]'} {label}
+                      </li>
+                    ))}
                   </ul>
                 </div>
-                <FormLine
-                  name="newPasswordConfirm"
-                  inputType="password"
-                  label="Confirmez"
-                  required={isPasswordChangeOpen}
-                  value={newPasswordConfirm}
-                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                />
+                <div className="field-wrapper">
+                  <FormLine
+                    name="newPasswordConfirm"
+                    inputType="password"
+                    label="Confirmez"
+                    required={isPasswordChangeOpen}
+                    value={newPasswordConfirm}
+                    onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                  />
+                </div>
                 <div className={`collapsible${isPasswordChangeOpen && newPasswordConfirm.length > 0 ? ' collapsible--open' : ''}`}>
                   <div className={`pseudo-status pseudo-status--${newPasswordConfirmValid ? 'available' : 'taken'}`}>
                     {newPasswordConfirmValid ? '✓ Les mots de passe correspondent' : '✗ Les mots de passe ne correspondent pas'}
