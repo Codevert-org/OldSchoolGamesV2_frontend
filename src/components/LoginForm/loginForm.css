@@ -127,3 +127,39 @@ form {
     margin: 0 0 8px 0;
   }
 }
+
+.login-form-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 750px) {
+  .login-page {
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-line {
+    & input {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+  }
+}
+
+@media (max-width: 479px) {
+  .form-line {
+    column-gap: 10px;
+    & input {
+      width: 150px;
+    }
+  }
+  .avatar-preview-container {
+    width: 70px;
+    height: 70px;
+  }
+}

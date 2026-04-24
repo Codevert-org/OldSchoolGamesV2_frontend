@@ -255,6 +255,7 @@ export function LoginForm() {
         setShowModal={setIsOpen}
       />
       <div className="login-page">
+        <div className="login-form-wrapper">
         <Switch
           labels={['login', 'register']}
           switchIndex={switchIndex}
@@ -359,6 +360,7 @@ export function LoginForm() {
             />
           </form>
         </Box>
+        </div>
         {errorMessage && <div className="server-error">{errorMessage}</div>}
         {avatarWarning && (
           <div className="avatar-warning">
