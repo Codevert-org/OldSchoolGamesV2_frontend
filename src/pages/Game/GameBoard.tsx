@@ -23,7 +23,7 @@ export function GameBoard(props: GameBoardProps) {
       style={{
         '--cols': props.cols,
         '--rows': props.rows,
-        '--min-playable-width': `calc(${props.cols} * 44px)`,
+        '--min-playable-width': `${Number(props.cols) * 44}px`,
       } as React.CSSProperties}
     >
       <div className="jouability-guard">

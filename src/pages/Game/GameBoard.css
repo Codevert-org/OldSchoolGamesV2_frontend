@@ -8,6 +8,7 @@
   overflow: hidden;
   box-sizing: border-box;
   container-type: inline-size;
+  container-name: gameboard;
 }
 
 .game-grid {
@@ -54,7 +55,7 @@
   padding: 20px;
 }
 
-@container (max-width: calc(var(--min-playable-width) - 1px)) {
+@container gameboard (max-width: var(--min-playable-width)) {
   .jouability-guard {
     display: block;
   }
