@@ -31,6 +31,23 @@
   color: inherit;
 }
 
+.reload-handler {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms ease-out;
+  overflow: hidden;
+  text-align: center;
+}
+
+.reload-handler--open {
+  grid-template-rows: 1fr;
+}
+
+.reload-handler__inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .jouability-guard {
   display: none;
   text-align: center;

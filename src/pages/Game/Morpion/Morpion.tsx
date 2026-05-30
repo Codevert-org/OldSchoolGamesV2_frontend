@@ -103,15 +103,13 @@ export function Morpion() {
       <div className="game-area">
         <GameBoard cols='3' rows='3' gameName='Morpion' handleCellClick={handleCellClick} cellsContent={cells} />
       </div>
-      <div className='reload-handler'>
-        {gameEnded && !reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
-          <div className='reload-buttons'><Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie"/><Button type='button' callback={() => requestReload()} label="✅ rejouer" /></div>
-        )}
-        {
-          gameEnded && (
-            <p>{appContext.appState.user?.pseudo} {reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) ? '✅' : ''} | {reloadRequestedBy.includes(opponent ?? '') ? '✅' : ''} {opponent}</p>
-          )
-        }
+      <div className={`reload-handler${gameEnded ? ' reload-handler--open' : ''}`}>
+        <div className="reload-handler__inner">
+          {!reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
+            <div className='reload-buttons'><Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie"/><Button type='button' callback={() => requestReload()} label="✅ rejouer" /></div>
+          )}
+          <p>{appContext.appState.user?.pseudo} {reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) ? '✅' : ''} | {reloadRequestedBy.includes(opponent ?? '') ? '✅' : ''} {opponent}</p>
+        </div>
       </div>
     </div>
   )

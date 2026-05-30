@@ -182,18 +182,18 @@ export function Reversi() {
       <div className="game-area">
         <GameBoard cols='8' rows='8' gameName='Reversi' handleCellClick={handleCellClick} cellsContent={cells} />
       </div>
-      <div className='reload-handler'>
-        {gameEnded && !reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
-          <div className='reload-buttons'>
-            <Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie" />
-            <Button type='button' callback={() => requestReload()} label="✅ Rejouer" />
-          </div>
-        )}
-        {gameEnded && (
+      <div className={`reload-handler${gameEnded ? ' reload-handler--open' : ''}`}>
+        <div className="reload-handler__inner">
+          {!reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
+            <div className='reload-buttons'>
+              <Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie" />
+              <Button type='button' callback={() => requestReload()} label="✅ Rejouer" />
+            </div>
+          )}
           <p>
             {appContext.appState.user?.pseudo} {reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) ? '✅' : ''} | {reloadRequestedBy.includes(opponent ?? '') ? '✅' : ''} {opponent}
           </p>
-        )}
+        </div>
       </div>
     </div>
   );
