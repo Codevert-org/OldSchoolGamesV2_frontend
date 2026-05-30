@@ -1,0 +1,47 @@
+.GameBoard {
+  width: min(100cqw, calc(100cqh * var(--cols) / var(--rows)));
+  aspect-ratio: var(--cols) / var(--rows);
+  border: 11px solid green;
+  border-image: url('/box_border.png') 11 stretch;
+  border-radius: 12px;
+  box-shadow: 3px 3px 6px #306b30;
+  overflow: hidden;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.game-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+}
+
+.cells {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: min(5cqi, 2em);
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.jouability-guard {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+@container (max-width: calc(var(--min-playable-width) - 1px)) {
+  .jouability-guard {
+    display: block;
+  }
+  .game-grid {
+    display: none;
+  }
+}

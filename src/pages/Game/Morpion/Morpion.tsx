@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useContext, useEffect, useCallback, useRef, useState } from 'react';
 import { GameBoard } from "../GameBoard";
 import { WsContext, AppContext } from "../../../contexts";
-import { Box, Button } from '../../../components';
+import { Button } from '../../../components';
 import type { IGameEventData } from "../../../interfaces/events/IGame";
 
 import './Morpion.scss';
@@ -100,7 +100,9 @@ export function Morpion() {
   return (
     <div className="Morpion">
       <div id="game-turn-data">{turn}</div>
-      <Box><GameBoard cols='3' rows='3' width='300' handleCellClick={handleCellClick} cellsContent={cells} /></Box>
+      <div className="game-area">
+        <GameBoard cols='3' rows='3' gameName='Morpion' handleCellClick={handleCellClick} cellsContent={cells} />
+      </div>
       <div className='reload-handler'>
         {gameEnded && !reloadRequestedBy.includes(appContext.appState.user?.pseudo as string) && (
           <div className='reload-buttons'><Button type='button' callback={() => navigate('/')} label="❌ Quitter la partie"/><Button type='button' callback={() => requestReload()} label="✅ rejouer" /></div>

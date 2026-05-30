@@ -18,7 +18,9 @@ export function Home() {
   return (
     <div className="home-layout">
       <Header ioClose={ioClose}/>
-      <Outlet />
+      <div className="home-content">
+        <Outlet />
+      </div>
     </div>
   )
 }

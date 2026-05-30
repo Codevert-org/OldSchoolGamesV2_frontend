@@ -16,6 +16,12 @@ html, #root {
 	overflow: hidden;
 }
 
+.home-content {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
 body {
 	margin: 0;
 	padding: 0;
