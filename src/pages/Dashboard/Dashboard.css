@@ -1,7 +1,7 @@
 .dashboard {
   display: grid;
   grid-template-columns: minmax(min-content, 20%) 1fr;
-  flex: 1;
+  height: 100%;
   overflow: hidden;
 }
 
